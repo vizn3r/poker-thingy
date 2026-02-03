@@ -1,0 +1,2 @@
+/usr/bin/ar qc libpoker.a CMakeFiles/poker.dir/src/poker.c.o
+/usr/bin/ranlib libpoker.a

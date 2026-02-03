@@ -1,0 +1,2 @@
+/usr/bin/ar qc libtui.a CMakeFiles/tui.dir/src/tui.c.o
+/usr/bin/ranlib libtui.a

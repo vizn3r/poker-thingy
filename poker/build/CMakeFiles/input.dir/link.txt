@@ -1,0 +1,2 @@
+/usr/bin/ar qc libinput.a CMakeFiles/input.dir/src/input.c.o
+/usr/bin/ranlib libinput.a
