@@ -1,7 +1,0 @@
-/home/vizn3r/dev/poker/build/CMakeFiles/tui.dir
-/home/vizn3r/dev/poker/build/CMakeFiles/input.dir
-/home/vizn3r/dev/poker/build/CMakeFiles/table.dir
-/home/vizn3r/dev/poker/build/CMakeFiles/poker.dir
-/home/vizn3r/dev/poker/build/CMakeFiles/game.dir
-/home/vizn3r/dev/poker/build/CMakeFiles/edit_cache.dir
-/home/vizn3r/dev/poker/build/CMakeFiles/rebuild_cache.dir
