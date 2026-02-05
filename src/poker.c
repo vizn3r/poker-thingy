@@ -32,6 +32,12 @@ struct poker_game *poker_init(void) {
   return game;
 }
 
+void poker_free(struct poker_game *game) {
+  free(game->players);
+  free(game->board);
+  free(game);
+}
+
 void poker_render_cards(struct tui_ui *ui, struct poker_game *game) {
   for (size_t i = 0; i < game->board->n_cards; i++) {
     tui_centered_ascii(ui, ui->w / 2 + (i - 2) * 8, (ui->h / 2) - 1, &ascii_base_card);

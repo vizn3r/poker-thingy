@@ -47,4 +47,6 @@ struct poker_game {
 
 struct poker_game *poker_init(void);
 
+void poker_free(struct poker_game *game);
+
 bool poker_play(struct tui_ui *ui, struct poker_game *game);

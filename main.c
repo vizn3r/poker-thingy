@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define GAME_TITLE "A Casino Game"
+
 enum game_state {
   MENU,
   POKER
@@ -41,6 +43,7 @@ int main(void) {
 
   for (;;) {
     tui_clear(ui);
+    // tui_centered_text(ui, wc, hc, "+");
 
     if (state == MENU)
       print_menu();
@@ -48,33 +51,6 @@ int main(void) {
     if (state == POKER) {
       if (poker_game == NULL) {
         poker_game = poker_init();
-
-        poker_game->board->cards[0] = (struct table_card){
-            .rank = 'a',
-            .suit = 's',
-            .value = 11,
-        };
-        poker_game->board->cards[1] = (struct table_card){
-            .rank = 'a',
-            .suit = 's',
-            .value = 11,
-        };
-        poker_game->board->cards[2] = (struct table_card){
-            .rank = 'a',
-            .suit = 's',
-            .value = 11,
-        };
-        poker_game->board->cards[3] = (struct table_card){
-            .rank = 'a',
-            .suit = 's',
-            .value = 11,
-        };
-        poker_game->board->cards[4] = (struct table_card){
-            .rank = 'a',
-            .suit = 's',
-            .value = 11,
-        };
-        poker_game->board->n_cards = 5;
       }
       poker_play(ui, poker_game);
     }
@@ -106,7 +82,7 @@ exit:
 }
 
 void print_menu(void) {
-  tui_centered_text(ui, wc, hc - 1, "Texas Poker");
+  tui_centered_text(ui, wc, hc - 1, GAME_TITLE);
   tui_centered_text(ui, wc, hc + 1, "Press [P] to start");
 }
 
