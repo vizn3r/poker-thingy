@@ -18,8 +18,7 @@ enum poker_player_role {
 };
 
 struct poker_player {
-  struct table_card cards[2];
-  uint16_t id;
+  struct table_card *cards[2];
   char *name;
   uint64_t money;
   enum poker_player_role role;
@@ -39,7 +38,11 @@ enum poker_game_state {
 struct poker_game {
   struct poker_board *board;
   struct poker_player **players;
+  struct poker_player *main_player;
+  struct table_deck *deck;
+  struct table_deck *discard;
   uint16_t n_players;
+  uint16_t dealer;
   uint64_t pot;
   enum poker_game_state state;
   uint32_t rounds_played;

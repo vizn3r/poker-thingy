@@ -71,3 +71,38 @@ void tui_centered_ascii(struct tui_ui *ui, uint16_t x, uint16_t y, struct tui_as
     memcpy(&ui->buff[(y + i) * ui->w + x - ascii->w / 2], ascii->buff[i], len);
   }
 }
+
+#define ASCII_BOX_VERT "|"
+#define ASCII_BOX_HORIZ "-"
+#define ASCII_BOX_CORNER_TL "+"
+#define ASCII_BOX_CORNER_TR "+"
+#define ASCII_BOX_CORNER_BL "+"
+#define ASCII_BOX_CORNER_BR "+"
+
+struct tui_ascii *tui_ascii_box(size_t w, size_t h) {
+  struct tui_ascii *ascii = (struct tui_ascii *)malloc(sizeof(struct tui_ascii));
+  ascii->w = w;
+  ascii->h = h;
+  ascii->buff = (char **)malloc(sizeof(char *) * h);
+  for (uint16_t i = 0; i < h; i++) {
+    ascii->buff[i] = (char *)malloc(sizeof(char) * w);
+    memset(ascii->buff[i], ' ', w);
+  }
+  for (uint16_t i = 0; i < h; i++) {
+    ascii->buff[i][0] = ASCII_BOX_CORNER_TL[0];
+    ascii->buff[i][w - 1] = ASCII_BOX_CORNER_TR[0];
+  }
+  for (uint16_t i = 0; i < w; i++) {
+    ascii->buff[0][i] = ASCII_BOX_CORNER_TL[0];
+    ascii->buff[h - 1][i] = ASCII_BOX_CORNER_BL[0];
+  }
+  for (uint16_t i = 0; i < h; i++) {
+    ascii->buff[i][0] = ASCII_BOX_VERT[0];
+    ascii->buff[i][w - 1] = ASCII_BOX_VERT[0];
+  }
+  for (uint16_t i = 0; i < w; i++) {
+    ascii->buff[0][i] = ASCII_BOX_HORIZ[0];
+    ascii->buff[h - 1][i] = ASCII_BOX_HORIZ[0];
+  }
+  return ascii;
+}

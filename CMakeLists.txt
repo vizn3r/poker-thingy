@@ -12,7 +12,8 @@ add_library(tui src/tui.c)
 add_library(input src/input.c)
 add_library(table src/table.c)
 add_library(poker src/poker.c)
+add_library(menu src/menu.c)
 
 add_executable(game main.c)
 
-target_link_libraries(game poker tui input table)
+target_link_libraries(game poker tui input table menu)
