@@ -15,14 +15,13 @@
 // clang-format off
 const struct tui_ascii ascii_chip = {
   .buff = (char *[]){
-  "o-o",
-  "|1|",
-  "o-o"
+    "╭───╮",
+    "│ 2 │",
+    "╰───╯",
   },
-  .w = 3,
+  .w = 5,
   .h = 3,
-};
-// clang-format on
+}; // clang-format on
 
 void poker_deal(void);
 
@@ -83,13 +82,10 @@ void poker_display(struct tui_ui *ui, struct poker_game *game) {
   }
 
   // Show main player's cards
-  if (mp->cards[0] == NULL) {
-    tui_centered_text(ui, ui->w / 2, ui->h / 2, "No cards left");
-  }
   struct tui_ascii *mp_card1 = table_card_ascii(mp->cards[0]);
   struct tui_ascii *mp_card2 = table_card_ascii(mp->cards[1]);
-  tui_centered_ascii(ui, (ui->w / 2) - 4, ui->h / 2 + ui->h / 4, mp_card1);
-  tui_centered_ascii(ui, (ui->w / 2) + 4, ui->h / 2 + ui->h / 4, mp_card2);
+  tui_centered_ascii(ui, (ui->w / 2) - 4, ui->h / 2 + 7, mp_card1);
+  tui_centered_ascii(ui, (ui->w / 2) + 4, ui->h / 2 + 7, mp_card2);
   free(mp_card1);
   free(mp_card2);
 
@@ -99,28 +95,37 @@ void poker_display(struct tui_ui *ui, struct poker_game *game) {
   role_chip->h = ascii_chip.h;
   role_chip->buff = (char **)malloc(sizeof(char *) * role_chip->h);
   for (uint16_t i = 0; i < role_chip->h; i++) {
-    role_chip->buff[i] = (char *)malloc(sizeof(char) * role_chip->w);
-    memcpy(role_chip->buff[i], ascii_chip.buff[i], sizeof(struct tui_ascii));
+    size_t len = strlen(ascii_chip.buff[i]) + 1;
+    role_chip->buff[i] = (char *)malloc(len);
+    memcpy(role_chip->buff[i], ascii_chip.buff[i], len);
   }
 
+  uint16_t chip_x = ui->w / 2 - 10;
+  uint16_t chip_y = ui->h / 2 + 8;
   switch (mp->role) {
   case PLAYER_BIG_BLIND:
-    role_chip->buff[1][1] = 'B';
-    tui_centered_ascii(ui, ui->w / 2, ui->h / 2 + ui->h / 4, role_chip);
+    role_chip->buff[1][4] = 'B';
+    tui_centered_ascii(ui, chip_x, chip_y, role_chip);
     break;
   case PLAYER_SMALL_BLIND:
-    role_chip->buff[1][1] = 'S';
-    tui_centered_ascii(ui, ui->w / 2, ui->h / 2 + ui->h / 4, role_chip);
+    role_chip->buff[1][4] = 'S';
+    tui_centered_ascii(ui, chip_x, chip_y, role_chip);
     break;
   case PLAYER_DEALER:
-    role_chip->buff[1][1] = 'D';
-    tui_centered_ascii(ui, ui->w / 2, ui->h / 2 + ui->h / 4, role_chip);
+    role_chip->buff[1][4] = 'D';
+    tui_centered_ascii(ui, chip_x, chip_y, role_chip);
     break;
   default:
     break;
   }
 
   free(role_chip);
+}
+
+int last_key = 0;
+void poker_input(struct poker_game *game, int key) {
+  (void)game;
+  last_key = key;
 }
 
 // Check what the player can do
@@ -130,9 +135,9 @@ void poker_check_player_actions(struct poker_game *game, size_t player_id) {
 }
 
 bool poker_play(struct tui_ui *ui, struct poker_game *game) {
+  (void)ui;
   size_t sb = game->dealer;
   size_t bb = (game->dealer + 1) % game->n_players;
-  game->last_aggressor = (bb + 1) % game->n_players; // BB is by default the first last aggressor
 
   // The poker state machine
   switch (game->state) {
@@ -143,7 +148,7 @@ bool poker_play(struct tui_ui *ui, struct poker_game *game) {
     game->players[bb]->role = PLAYER_BIG_BLIND;
 
     for (uint16_t i = 0; i < game->n_players; i++) {
-      if (game->players[i]->role != PLAYER_SMALL_BLIND || game->players[i]->role != PLAYER_BIG_BLIND) {
+      if (game->players[i]->role != PLAYER_SMALL_BLIND && game->players[i]->role != PLAYER_BIG_BLIND) {
         game->players[i]->role = PLAYER_NORMAL;
       }
 
@@ -152,7 +157,9 @@ bool poker_play(struct tui_ui *ui, struct poker_game *game) {
     }
 
     game->state = POKER_SMALL_BLIND;
-    // break;
+    game->last_aggressor = (bb + 1) % game->n_players; // BB is by default the first last aggressor
+
+    break;
 
   // Small blind player pays
   case POKER_SMALL_BLIND:
@@ -160,7 +167,7 @@ bool poker_play(struct tui_ui *ui, struct poker_game *game) {
     game->players[sb]->money -= game->small_blind;
 
     game->state = POKER_BIG_BLIND;
-    // break;
+    break;
 
   // Big blind player pays
   case POKER_BIG_BLIND:

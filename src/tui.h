@@ -5,8 +5,14 @@
 #include <stdint.h>
 #include <sys/types.h>
 
+struct tui_cell {
+  char c[4];
+  size_t size;
+};
+
 struct tui_ui {
   char *buff;
+  struct tui_cell *cells;
   uint16_t w;
   uint16_t h;
 };
@@ -55,6 +61,6 @@ struct tui_ascii *tui_ascii_arr(char **arr, size_t len);
 struct tui_ascii *tui_ascii_box(size_t w, size_t h);
 
 // Checks if the tui should be resized
-bool tui_resize(struct tui_ui *ui, uint16_t x, uint16_t y);
+void tui_resize(struct tui_ui *ui);
 
 char *tui_fmt(char *text, ...);

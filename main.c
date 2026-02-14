@@ -27,13 +27,21 @@ int main(void) {
   signal(SIGINT, signal_handler);
   signal(SIGTERM, signal_handler);
   signal(SIGQUIT, signal_handler);
+  struct sigaction sa;
+  sa.sa_handler = signal_handler;
+  sa.sa_flags = 0; // no SA_RESTART
+  sigemptyset(&sa.sa_mask);
+  sigaction(SIGWINCH, &sa, NULL);
 
   input_enable_raw_mode();
+  tui_clear(ui);
+  tui_resize(ui);
+  tui_render(ui);
 
   menu_log("Starting");
   for (;;) {
     tui_clear(ui);
-    // tui_centered_text(ui, wc, hc, "+");
+    menu_log("Select input");
 
     if (state == MENU)
       menu_main_print(ui);
@@ -65,13 +73,13 @@ int main(void) {
     case (MENU << 8) | 'p':
     case (MENU << 8) | 'P':
       state = POKER;
+      break;
     case (POKER << 8):
       poker_input(poker_game, key);
       break;
     default:
       continue;
     }
-    break;
   }
 
 exit:
@@ -91,6 +99,9 @@ void signal_handler(int signal) {
     input_disable_raw_mode();
     tui_free(ui);
     exit(EXIT_SUCCESS);
+    break;
+  case SIGWINCH:
+    tui_resize(ui);
     break;
   default:
     break;

@@ -33,5 +33,4 @@ void menu_log(char *msg) {
   }
 
   strcat(log_buffer, msg);
-  strcat(log_buffer, "\n");
 }
