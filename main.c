@@ -3,7 +3,6 @@
 #define GAME_TITLE "A Casino Game"
 #include "menu.h"
 #include "poker.h"
-#include "table.h"
 #include "tui.h"
 #include <signal.h>
 #include <stdint.h>
@@ -49,21 +48,30 @@ int main(void) {
         }
       }
       poker_play(ui, poker_game);
+      poker_display(ui, poker_game);
     }
 
     tui_render(ui);
-    switch (input_get_key()) {
-    case 'q':
-    case 'Q':
-    case INPUT_KEY_ESC:
+    key = input_get_key();
+    switch ((state << 8) | key) {
+    case (MENU << 8) | 'q':
+    case (MENU << 8) | 'Q':
+    case (POKER << 8) | 'q':
+    case (POKER << 8) | 'Q':
+    case (MENU << 8) | INPUT_KEY_ESC:
+    case (POKER << 8) | INPUT_KEY_ESC:
       goto exit;
       break;
-    case 'p':
-    case 'P':
+    case (MENU << 8) | 'p':
+    case (MENU << 8) | 'P':
       state = POKER;
+    case (POKER << 8):
+      poker_input(poker_game, key);
+      break;
     default:
       continue;
     }
+    break;
   }
 
 exit:
