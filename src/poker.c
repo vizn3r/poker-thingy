@@ -8,6 +8,8 @@
 
 #define NUM_PLAYERS 5
 #define STARTING_BAL 1000
+#define SMALL_BLIND 1
+#define BIG_BLIND 2
 
 void poker_deal(void);
 
@@ -15,6 +17,8 @@ struct poker_game *poker_init(void) {
   struct poker_game *game = (struct poker_game *)malloc(sizeof(struct poker_game));
 
   game->n_players = NUM_PLAYERS;
+  game->small_blind = SMALL_BLIND;
+  game->big_blind = BIG_BLIND;
 
   game->players = (struct poker_player **)calloc(game->n_players, sizeof(struct poker_player *));
   game->board = (struct poker_board *)malloc(sizeof(struct poker_board));
@@ -35,7 +39,7 @@ struct poker_game *poker_init(void) {
   }
   game->dealer = 0;
 
-  game->state = POKER_SMALL_BLIND;
+  game->state = POKER_DEAL;
   game->board->n_cards = 0;
 
   return game;
@@ -61,7 +65,9 @@ bool poker_play(struct tui_ui *ui, struct poker_game *game) {
 
   // The poker state machine
   switch (game->state) {
-  case POKER_SMALL_BLIND:
+
+  // Players are dealt
+  case POKER_DEAL:
     game->players[sb]->role = PLAYER_SMALL_BLIND;
     game->players[bb]->role = PLAYER_BIG_BLIND;
 
@@ -73,20 +79,56 @@ bool poker_play(struct tui_ui *ui, struct poker_game *game) {
       game->players[i]->cards[0] = table_deck_draw(game->deck);
       game->players[i]->cards[1] = table_deck_draw(game->deck);
     }
+
+    game->state = POKER_SMALL_BLIND;
     break;
+
+  // Small blind player pays
+  case POKER_SMALL_BLIND:
+    game->pot += game->small_blind;
+    game->players[sb]->money -= game->small_blind;
+
+    game->state = POKER_BIG_BLIND;
+    break;
+
+  // Big blind player pays
   case POKER_BIG_BLIND:
+    game->pot += game->big_blind;
+    game->players[bb]->money -= game->big_blind;
+
+    game->state = POKER_PREFLOP;
     break;
+
+  // Players call/check/fold/raise
   case POKER_PREFLOP:
     break;
+
+  // First 3 cards are dealt on the board, players check/fold/raise/call
   case POKER_FLOP:
     break;
+
+  // 4th card is dealt on the board, players check/fold/raise/call
   case POKER_TURN:
     break;
+
+  // 5th card is dealt on the board, players check/fold/raise/call
   case POKER_RIVER:
     break;
+
+  // Evaulation of the board, players get payed out
   case POKER_SHOW_CARDS:
     break;
+
+  // End of the round, reset deck, dealer, and players
   case POKER_ROUND_END:
+    game->dealer = (game->dealer + 1) % game->n_players;
+
+    for (uint16_t i = 0; i < game->n_players; i++) {
+      game->players[i]->cards[0] = NULL;
+      game->players[i]->cards[1] = NULL;
+    }
+
+    game->state = POKER_DEAL;
     break;
   }
 
@@ -99,8 +141,8 @@ bool poker_play(struct tui_ui *ui, struct poker_game *game) {
   struct tui_ascii *main_player_card1 = table_card_ascii(game->main_player->cards[0]);
   struct tui_ascii *main_player_card2 = table_card_ascii(game->main_player->cards[1]);
 
-  tui_centered_ascii(ui, (ui->w / 2) - 5, ui->h / 2, main_player_card1);
-  tui_centered_ascii(ui, (ui->w / 2) + 5, ui->h / 2, main_player_card2);
+  tui_centered_ascii(ui, (ui->w / 2) - 4, ui->h / 2 + ui->h / 4, main_player_card1);
+  tui_centered_ascii(ui, (ui->w / 2) + 4, ui->h / 2 + ui->h / 4, main_player_card2);
 
   free(main_player_card1);
   free(main_player_card2);

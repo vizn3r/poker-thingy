@@ -25,6 +25,7 @@ struct poker_player {
 };
 
 enum poker_game_state {
+  POKER_DEAL,
   POKER_SMALL_BLIND,
   POKER_BIG_BLIND,
   POKER_PREFLOP,
@@ -44,6 +45,8 @@ struct poker_game {
   uint16_t n_players;
   uint16_t dealer;
   uint64_t pot;
+  uint64_t small_blind;
+  uint64_t big_blind;
   enum poker_game_state state;
   uint32_t rounds_played;
 };
