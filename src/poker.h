@@ -29,6 +29,7 @@ struct poker_player {
   uint64_t money;
   uint64_t bet;
   bool folded;
+  bool show_cards;
   enum poker_player_role role;
   enum poker_player_action action;
   enum poker_player_action possible_actions;

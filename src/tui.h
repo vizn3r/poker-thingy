@@ -62,6 +62,9 @@ struct tui_ascii *tui_ascii_box(size_t w, size_t h);
 
 void tui_ascii_free(struct tui_ascii *ascii);
 
+uint16_t tui_gx(struct tui_ui *ui, uint16_t x);
+uint16_t tui_gy(struct tui_ui *ui, uint16_t y);
+
 // Checks if the tui should be resized
 void tui_resize(struct tui_ui *ui);
 

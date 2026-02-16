@@ -42,3 +42,14 @@ void menu_free(void) {
   free(log_buffer);
   log_buffer = NULL;
 }
+
+char *exit_msg = "Thanks for playing!\n";
+void menu_set_exit_msg(char *msg) {
+  if (msg != NULL) {
+    exit_msg = msg;
+  }
+}
+
+void menu_print_exit_msg(void) {
+  printf("%s", exit_msg);
+}

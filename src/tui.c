@@ -1,11 +1,17 @@
 #include "tui.h"
+#include "menu.h"
 #include <stdarg.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
+
+#define TUI_SHOW_GRID false
+#define TUI_GRID_X 8
+#define TUI_GRID_Y 8
 
 struct tui_ui *tui_init(void) {
   printf("\033[?1049h");
@@ -29,20 +35,65 @@ struct tui_ui *tui_init(void) {
 }
 
 void tui_free(struct tui_ui *ui) {
+  if (ui == NULL || ui->buff == NULL)
+    return;
   free(ui->buff);
   free(ui->cells);
   free(ui);
+  ui = NULL;
   printf("\033[H\033[J");
   printf("\033[?1049l");
   printf("\033[?25h");
   fflush(stdout);
 }
 
+void tui_show_grid(struct tui_ui *ui) {
+  // Vertical lines - divide width into 8ths
+  for (uint16_t i = 1; i < TUI_GRID_X; i++) {
+    uint16_t x = (ui->w / TUI_GRID_X) * i;
+    char label[2];
+    label[0] = '0' + i;
+    label[1] = '\0';
+    tui_text(ui, x, 0, label);
+    for (uint16_t y = 1; y < ui->h; y++) {
+      tui_text(ui, x, y, "│");
+    }
+  }
+
+  // Horizontal lines - divide height into 8ths
+  for (uint16_t i = 1; i < TUI_GRID_Y; i++) {
+    uint16_t y = (ui->h / TUI_GRID_Y) * i;
+    char label[2];
+    label[0] = '0' + i;
+    label[1] = '\0';
+    tui_text(ui, 0, y, label);
+    for (uint16_t x = 1; x < ui->w; x++) {
+      tui_text(ui, x, y, "─");
+    }
+  }
+}
+
+uint16_t tui_gx(struct tui_ui *ui, uint16_t x) { return x * ui->w / TUI_GRID_X; }
+uint16_t tui_gy(struct tui_ui *ui, uint16_t y) { return y * ui->h / TUI_GRID_Y; }
+
 void tui_render(struct tui_ui *ui) {
   printf("\033[?25l\033[1;1H");
   fflush(stdout);
   size_t cursor = 0;
   memset(ui->buff, 0, ui->h * ui->w * 4);
+
+  if (ui->w < 80 && ui->h < 24) {
+    tui_clear(ui);
+    tui_text(ui, 1, 1, "Terminal too small! Minimum 80x24");
+    tui_text(ui, 1, 2, "Press [Q] to exit or resize your terminal!");
+  }
+
+  // Enforce maximum size
+  if (ui->w > 200 && ui->h > 50) {
+    tui_clear(ui);
+    tui_text(ui, 1, 1, "Terminal too large! Maximum 200x50");
+    tui_text(ui, 1, 2, "Press [Q] to exit or resize your terminal!");
+  }
 
   for (uint32_t i = 0; i < ui->h * ui->w; i++) {
     memcpy(&ui->buff[cursor], ui->cells[i].c, ui->cells[i].size);
@@ -52,14 +103,20 @@ void tui_render(struct tui_ui *ui) {
       cursor++;
     }
   }
+
   fwrite(ui->buff, sizeof(char), cursor, stdout);
   fflush(stdout);
 }
 
 void tui_clear(struct tui_ui *ui) {
+  if (ui == NULL)
+    return;
   for (uint32_t i = 0; i < ui->h * ui->w; i++) {
     ui->cells[i].c[0] = ' ';
     ui->cells[i].size = 1;
+  }
+  if (TUI_SHOW_GRID) {
+    tui_show_grid(ui);
   }
 }
 size_t utf8_char_size(char c) {
@@ -136,22 +193,27 @@ void tui_ascii(struct tui_ui *ui, uint16_t x, uint16_t y, struct tui_ascii *asci
 }
 
 void tui_centered_ascii(struct tui_ui *ui, uint16_t x, uint16_t y, struct tui_ascii *ascii) {
-  if (y >= ui->h)
-    return;
   for (uint16_t row = 0; row < ascii->h; row++) {
+    int16_t actual_y = y + row - ascii->h / 2;
+    if (actual_y < 0 || actual_y >= ui->h)
+      continue;
+
     uint16_t i = 0;
     uint16_t col = 0;
     while (ascii->buff[row][i] != '\0') {
-      if (x + col >= ui->w)
-        return;
+      int16_t actual_x = x + col - ascii->w / 2;
+      if (actual_x < 0 || actual_x >= ui->w)
+        break;
+
       size_t size = utf8_char_size(ascii->buff[row][i]);
-      memcpy(ui->cells[(y + row) * ui->w + x + col - ascii->w / 2].c, &ascii->buff[row][i], size);
-      ui->cells[(y + row) * ui->w + x + col - ascii->w / 2].size = size;
+      memcpy(ui->cells[actual_y * ui->w + actual_x].c, &ascii->buff[row][i], size);
+      ui->cells[actual_y * ui->w + actual_x].size = size;
       i += size;
       col++;
     }
   }
 }
+
 #define ASCII_BOX_VERT "║"
 #define ASCII_BOX_HORIZ "═"
 #define ASCII_BOX_CORNER_TL "╔"
@@ -207,7 +269,9 @@ void tui_ascii_free(struct tui_ascii *ascii) {
 
 void tui_resize(struct tui_ui *ui) {
   struct winsize ws;
+
   ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
+
   ui->h = ws.ws_row - 2;
   ui->w = ws.ws_col;
   free(ui->buff);
@@ -218,4 +282,6 @@ void tui_resize(struct tui_ui *ui) {
     ui->cells[i].c[0] = ' ';
     ui->cells[i].size = 1;
   }
+
+  tui_render(ui);
 }

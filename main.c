@@ -4,6 +4,7 @@
 #include "tui.h"
 #include <signal.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 enum game_state {
@@ -23,9 +24,16 @@ void quitter(void);
 int main(void) {
   ui = tui_init();
 
+  // Signals
   signal(SIGINT, signal_handler);
   signal(SIGTERM, signal_handler);
   signal(SIGQUIT, signal_handler);
+  signal(SIGSEGV, signal_handler);
+  signal(SIGABRT, signal_handler);
+  signal(SIGFPE, signal_handler);
+
+  atexit(quitter);
+
   struct sigaction sa;
   sa.sa_handler = signal_handler;
   sa.sa_flags = 0; // no SA_RESTART
@@ -67,8 +75,7 @@ int main(void) {
     case (POKER << 8) | 'Q':
     case (MENU << 8) | INPUT_KEY_ESC:
     case (POKER << 8) | INPUT_KEY_ESC:
-      goto exit;
-      break;
+      exit(EXIT_SUCCESS);
     case (MENU << 8) | 'p':
     case (MENU << 8) | 'P':
       state = POKER;
@@ -81,17 +88,19 @@ int main(void) {
     }
   }
 
-exit:
-  quitter();
-
   return 0;
 }
 
+bool quitting = false;
 void quitter(void) {
+  if (quitting)
+    return;
+  quitting = true;
+
   input_disable_raw_mode();
   menu_free();
-  tui_clear(ui);
   tui_free(ui);
+  menu_print_exit_msg();
   exit(EXIT_SUCCESS);
 }
 
@@ -100,6 +109,9 @@ void signal_handler(int signal) {
   case SIGINT:
   case SIGQUIT:
   case SIGTERM:
+  case SIGSEGV:
+  case SIGABRT:
+  case SIGFPE:
     quitter();
     break;
   case SIGWINCH:

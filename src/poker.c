@@ -65,6 +65,8 @@ struct poker_game *poker_init(void) {
     game->players[i]->role = PLAYER_NORMAL;
     game->players[i]->action = PLAYER_ACTION_NONE;
     game->players[i]->folded = false;
+    game->players[i]->show_cards = true; // TODO: For now, show cards by default for testing purposes
+    game->players[i]->name = NULL;
   }
 
   game->main_player = game->players[0];
@@ -101,6 +103,7 @@ void poker_free(struct poker_game *game) {
 //   - Show pot/side pots
 //   - Show all player's chips
 //   - Show player's available actions
+//   - Show other player's cards
 void poker_display(struct tui_ui *ui, struct poker_game *game) {
   if (game == NULL)
     return;
@@ -134,8 +137,8 @@ void poker_display(struct tui_ui *ui, struct poker_game *game) {
     memcpy(role_chip->buff[i], ascii_chip.buff[i], len);
   }
 
-  uint16_t chip_x = ui->w / 2 - 10;
-  uint16_t chip_y = ui->h / 2 + 8;
+  uint16_t chip_x = tui_gx(ui, 3);
+  uint16_t chip_y = tui_gy(ui, 6);
   switch (mp->role) {
   case PLAYER_BIG_BLIND:
     role_chip->buff[1][4] = 'B';
@@ -163,11 +166,13 @@ void poker_display(struct tui_ui *ui, struct poker_game *game) {
   // Show main player's actions
   char actions[64] = "";
   for (enum poker_player_action action = PLAYER_ACTION_FOLD; action < PLAYER_ACTION_MAX; action++) {
-    if (game->main_player->possible_actions & action) {
+    if (mp->possible_actions & action) {
       strcat(actions, (char *)poker_actions[action - 1]);
     }
   }
   tui_centered_text(ui, ui->w / 2, 8 / 9 * ui->h + 2, actions);
+
+  // Show other player's cards
 }
 
 int last_key = -1;

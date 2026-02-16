@@ -1,0 +1,734 @@
+=================================================================
+==133020==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x7e23e17e6b90 at pc 0x7f73e2d1e1a7 bp 0x7ffffa7dde40 sp 0x7ffffa7dd5e8
+WRITE of size 3 at 0x7e23e17e6b90 thread T0
+    #0 0x7f73e2d1e1a6 in memcpy /usr/src/debug/gcc/gcc/libsanitizer/sanitizer_common/sanitizer_common_interceptors_memintrinsics.inc:115
+    #1 0x55b838a800e5 in tui_centered_ascii /home/vizn3r/dev/poker/src/tui.c:181
+    #2 0x55b838a7d52e in poker_display /home/vizn3r/dev/poker/src/poker.c:153
+    #3 0x55b838a7c60e in main /home/vizn3r/dev/poker/main.c:63
+    #4 0x7f73e2a36634  (/usr/lib/libc.so.6+0x27634) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #5 0x7f73e2a366e8 in __libc_start_main (/usr/lib/libc.so.6+0x276e8) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #6 0x55b838a7c864 in _start (/home/vizn3r/dev/poker/build/game+0x3864) (BuildId: 80750707aa7bdc4bfcc8fe098c6cf14b2b1b580d)
+
+0x7e23e17e6b90 is located 464 bytes after 26560-byte region [0x7e23e17e0200,0x7e23e17e69c0)
+allocated by thread T0 here:
+    #0 0x7f73e2d20cb5 in malloc /usr/src/debug/gcc/gcc/libsanitizer/asan/asan_malloc_linux.cpp:67
+    #1 0x55b838a8082c in tui_resize /home/vizn3r/dev/poker/src/tui.c:249
+
+SUMMARY: AddressSanitizer: heap-buffer-overflow /home/vizn3r/dev/poker/src/tui.c:181 in tui_centered_ascii
+Shadow bytes around the buggy address:
+  0x7e23e17e6900: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7e23e17e6980: 00 00 00 00 00 00 00 00 fa fa fa fa fa fa fa fa
+  0x7e23e17e6a00: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7e23e17e6a80: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7e23e17e6b00: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+=>0x7e23e17e6b80: fa fa[fa]fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7e23e17e6c00: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7e23e17e6c80: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7e23e17e6d00: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7e23e17e6d80: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7e23e17e6e00: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==133020==ABORTING
+=================================================================
+==136409==ERROR: AddressSanitizer: heap-use-after-free on address 0x7be9a39e0052 at pc 0x55aca51e972b bp 0x7ffc65e66940 sp 0x7ffc65e66930
+READ of size 2 at 0x7be9a39e0052 thread T0
+    #0 0x55aca51e972a in tui_clear /home/vizn3r/dev/poker/src/tui.c:95
+    #1 0x55aca51e6959 in quitter /home/vizn3r/dev/poker/main.c:100
+    #2 0x7fb9a4c4fc70  (/usr/lib/libc.so.6+0x40c70) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #3 0x7fb9a4c4fd4d in exit (/usr/lib/libc.so.6+0x40d4d) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #4 0x55aca51e6971 in quitter /home/vizn3r/dev/poker/main.c:102
+    #5 0x55aca51e6647 in main /home/vizn3r/dev/poker/main.c:92
+    #6 0x7fb9a4c36634  (/usr/lib/libc.so.6+0x27634) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #7 0x7fb9a4c366e8 in __libc_start_main (/usr/lib/libc.so.6+0x276e8) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #8 0x55aca51e6864 in _start (/home/vizn3r/dev/poker/build/game+0x3864) (BuildId: 723af9bf08f9e8013d88ba6b2081b8182a51da33)
+
+0x7be9a39e0052 is located 18 bytes inside of 24-byte region [0x7be9a39e0040,0x7be9a39e0058)
+freed by thread T0 here:
+    #0 0x7fb9a4f1f79d in free /usr/src/debug/gcc/gcc/libsanitizer/asan/asan_malloc_linux.cpp:51
+    #1 0x55aca51e8e50 in tui_free /home/vizn3r/dev/poker/src/tui.c:39
+
+previously allocated by thread T0 here:
+    #0 0x7fb9a4f20cb5 in malloc /usr/src/debug/gcc/gcc/libsanitizer/asan/asan_malloc_linux.cpp:67
+    #1 0x55aca51e8c0e in tui_init /home/vizn3r/dev/poker/src/tui.c:21
+
+SUMMARY: AddressSanitizer: heap-use-after-free /home/vizn3r/dev/poker/src/tui.c:95 in tui_clear
+Shadow bytes around the buggy address:
+  0x7be9a39dfd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7be9a39dfe00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7be9a39dfe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7be9a39dff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7be9a39dff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x7be9a39e0000: fa fa 00 00 00 fa fa fa fd fd[fd]fa fa fa fd fd
+  0x7be9a39e0080: fd fa fa fa fd fd fd fa fa fa fd fd fd fa fa fa
+  0x7be9a39e0100: fd fd fd fa fa fa fd fd fd fa fa fa fa fa fa fa
+  0x7be9a39e0180: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7be9a39e0200: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7be9a39e0280: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==136409==ABORTING
+=================================================================
+==136684==ERROR: AddressSanitizer: heap-use-after-free on address 0x7b5c045e0052 at pc 0x5627f50d872b bp 0x7ffc14cf4ed0 sp 0x7ffc14cf4ec0
+READ of size 2 at 0x7b5c045e0052 thread T0
+    #0 0x5627f50d872a in tui_clear /home/vizn3r/dev/poker/src/tui.c:95
+    #1 0x5627f50d5959 in quitter /home/vizn3r/dev/poker/main.c:100
+    #2 0x7f2c0584fc70  (/usr/lib/libc.so.6+0x40c70) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #3 0x7f2c0584fd4d in exit (/usr/lib/libc.so.6+0x40d4d) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #4 0x5627f50d5971 in quitter /home/vizn3r/dev/poker/main.c:102
+    #5 0x5627f50d5647 in main /home/vizn3r/dev/poker/main.c:92
+    #6 0x7f2c05836634  (/usr/lib/libc.so.6+0x27634) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #7 0x7f2c058366e8 in __libc_start_main (/usr/lib/libc.so.6+0x276e8) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #8 0x5627f50d5864 in _start (/home/vizn3r/dev/poker/build/game+0x3864) (BuildId: 723af9bf08f9e8013d88ba6b2081b8182a51da33)
+
+0x7b5c045e0052 is located 18 bytes inside of 24-byte region [0x7b5c045e0040,0x7b5c045e0058)
+freed by thread T0 here:
+    #0 0x7f2c05b1f79d in free /usr/src/debug/gcc/gcc/libsanitizer/asan/asan_malloc_linux.cpp:51
+    #1 0x5627f50d7e50 in tui_free /home/vizn3r/dev/poker/src/tui.c:39
+
+previously allocated by thread T0 here:
+    #0 0x7f2c05b20cb5 in malloc /usr/src/debug/gcc/gcc/libsanitizer/asan/asan_malloc_linux.cpp:67
+    #1 0x5627f50d7c0e in tui_init /home/vizn3r/dev/poker/src/tui.c:21
+
+SUMMARY: AddressSanitizer: heap-use-after-free /home/vizn3r/dev/poker/src/tui.c:95 in tui_clear
+Shadow bytes around the buggy address:
+  0x7b5c045dfd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b5c045dfe00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b5c045dfe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b5c045dff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b5c045dff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x7b5c045e0000: fa fa 00 00 00 fa fa fa fd fd[fd]fa fa fa fa fa
+  0x7b5c045e0080: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b5c045e0100: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b5c045e0180: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b5c045e0200: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b5c045e0280: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==136684==ABORTING
+=================================================================
+==137426==ERROR: AddressSanitizer: heap-use-after-free on address 0x7bfa52be0052 at pc 0x55639458772b bp 0x7fff287f56b0 sp 0x7fff287f56a0
+READ of size 2 at 0x7bfa52be0052 thread T0
+    #0 0x55639458772a in tui_clear /home/vizn3r/dev/poker/src/tui.c:95
+    #1 0x556394584959 in quitter /home/vizn3r/dev/poker/main.c:101
+    #2 0x7fca53e4fc70  (/usr/lib/libc.so.6+0x40c70) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #3 0x7fca53e4fd4d in exit (/usr/lib/libc.so.6+0x40d4d) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #4 0x556394588a88 in tui_resize /home/vizn3r/dev/poker/src/tui.c:259
+    #5 0x7fca53e4d4cf  (/usr/lib/libc.so.6+0x3e4cf) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #6 0x7fca53ea218d  (/usr/lib/libc.so.6+0x9318d) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #7 0x7fca53ea21b3  (/usr/lib/libc.so.6+0x931b3) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #8 0x7fca53f1ca6d in read (/usr/lib/libc.so.6+0x10da6d) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #9 0x7fca54085ba4 in read /usr/src/debug/gcc/gcc/libsanitizer/sanitizer_common/sanitizer_common_interceptors.inc:1011
+    #10 0x556394588bc1 in input_get_key /home/vizn3r/dev/poker/src/input.c:22
+    #11 0x55639458459b in main /home/vizn3r/dev/poker/main.c:70
+    #12 0x7fca53e36634  (/usr/lib/libc.so.6+0x27634) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #13 0x7fca53e366e8 in __libc_start_main (/usr/lib/libc.so.6+0x276e8) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #14 0x556394584864 in _start (/home/vizn3r/dev/poker/build/game+0x3864) (BuildId: 9a4493a923830fc7db7126746ef111b51afb1f43)
+
+0x7bfa52be0052 is located 18 bytes inside of 24-byte region [0x7bfa52be0040,0x7bfa52be0058)
+freed by thread T0 here:
+    #0 0x7fca5411f79d in free /usr/src/debug/gcc/gcc/libsanitizer/asan/asan_malloc_linux.cpp:51
+    #1 0x556394586e50 in tui_free /home/vizn3r/dev/poker/src/tui.c:39
+
+previously allocated by thread T0 here:
+    #0 0x7fca54120cb5 in malloc /usr/src/debug/gcc/gcc/libsanitizer/asan/asan_malloc_linux.cpp:67
+    #1 0x556394586c0e in tui_init /home/vizn3r/dev/poker/src/tui.c:21
+
+SUMMARY: AddressSanitizer: heap-use-after-free /home/vizn3r/dev/poker/src/tui.c:95 in tui_clear
+Shadow bytes around the buggy address:
+  0x7bfa52bdfd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7bfa52bdfe00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7bfa52bdfe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7bfa52bdff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7bfa52bdff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x7bfa52be0000: fa fa 00 00 00 fa fa fa fd fd[fd]fa fa fa fa fa
+  0x7bfa52be0080: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7bfa52be0100: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7bfa52be0180: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7bfa52be0200: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7bfa52be0280: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==137426==ABORTING
+=================================================================
+==137717==ERROR: AddressSanitizer: heap-use-after-free on address 0x7b7794fe0048 at pc 0x55b26308a861 bp 0x7fffc9f18630 sp 0x7fffc9f18620
+READ of size 8 at 0x7b7794fe0048 thread T0
+    #0 0x55b26308a860 in tui_clear /home/vizn3r/dev/poker/src/tui.c:95
+    #1 0x55b263087959 in quitter /home/vizn3r/dev/poker/main.c:101
+    #2 0x7f479624fc70  (/usr/lib/libc.so.6+0x40c70) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #3 0x7f479624fd4d in exit (/usr/lib/libc.so.6+0x40d4d) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #4 0x55b26308bbe2 in tui_resize /home/vizn3r/dev/poker/src/tui.c:261
+    #5 0x7f479624d4cf  (/usr/lib/libc.so.6+0x3e4cf) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #6 0x7f47962a218d  (/usr/lib/libc.so.6+0x9318d) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #7 0x7f47962a21b3  (/usr/lib/libc.so.6+0x931b3) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #8 0x7f479631ca6d in read (/usr/lib/libc.so.6+0x10da6d) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #9 0x7f4796485ba4 in read /usr/src/debug/gcc/gcc/libsanitizer/sanitizer_common/sanitizer_common_interceptors.inc:1011
+    #10 0x55b26308bd21 in input_get_key /home/vizn3r/dev/poker/src/input.c:22
+    #11 0x55b26308759b in main /home/vizn3r/dev/poker/main.c:70
+    #12 0x7f4796236634  (/usr/lib/libc.so.6+0x27634) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #13 0x7f47962366e8 in __libc_start_main (/usr/lib/libc.so.6+0x276e8) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #14 0x55b263087864 in _start (/home/vizn3r/dev/poker/build/game+0x3864) (BuildId: 05cb2f3fa300c7ebc4a36f4da694efacaca9723f)
+
+0x7b7794fe0048 is located 8 bytes inside of 24-byte region [0x7b7794fe0040,0x7b7794fe0058)
+freed by thread T0 here:
+    #0 0x7f479651f79d in free /usr/src/debug/gcc/gcc/libsanitizer/asan/asan_malloc_linux.cpp:51
+    #1 0x55b263089e50 in tui_free /home/vizn3r/dev/poker/src/tui.c:39
+
+previously allocated by thread T0 here:
+    #0 0x7f4796520cb5 in malloc /usr/src/debug/gcc/gcc/libsanitizer/asan/asan_malloc_linux.cpp:67
+    #1 0x55b263089c0e in tui_init /home/vizn3r/dev/poker/src/tui.c:21
+
+SUMMARY: AddressSanitizer: heap-use-after-free /home/vizn3r/dev/poker/src/tui.c:95 in tui_clear
+Shadow bytes around the buggy address:
+  0x7b7794fdfd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b7794fdfe00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b7794fdfe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b7794fdff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b7794fdff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x7b7794fe0000: fa fa 00 00 00 fa fa fa fd[fd]fd fa fa fa fa fa
+  0x7b7794fe0080: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b7794fe0100: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b7794fe0180: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b7794fe0200: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b7794fe0280: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==137717==ABORTING
+=================================================================
+==137961==ERROR: AddressSanitizer: heap-use-after-free on address 0x7bb7811e0052 at pc 0x56025683683e bp 0x7ffc86e812b0 sp 0x7ffc86e812a0
+READ of size 2 at 0x7bb7811e0052 thread T0
+    #0 0x56025683683d in tui_clear /home/vizn3r/dev/poker/src/tui.c:97
+    #1 0x56025683683d in tui_clear /home/vizn3r/dev/poker/src/tui.c:94
+    #2 0x560256833959 in quitter /home/vizn3r/dev/poker/main.c:101
+    #3 0x7f878244fc70  (/usr/lib/libc.so.6+0x40c70) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #4 0x7f878244fd4d in exit (/usr/lib/libc.so.6+0x40d4d) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #5 0x560256837bb2 in tui_resize /home/vizn3r/dev/poker/src/tui.c:261
+    #6 0x7f878244d4cf  (/usr/lib/libc.so.6+0x3e4cf) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #7 0x7f87824a218d  (/usr/lib/libc.so.6+0x9318d) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #8 0x7f87824a21b3  (/usr/lib/libc.so.6+0x931b3) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #9 0x7f878251ca6d in read (/usr/lib/libc.so.6+0x10da6d) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #10 0x7f8782685ba4 in read /usr/src/debug/gcc/gcc/libsanitizer/sanitizer_common/sanitizer_common_interceptors.inc:1011
+    #11 0x560256837ce1 in input_get_key /home/vizn3r/dev/poker/src/input.c:22
+    #12 0x56025683359b in main /home/vizn3r/dev/poker/main.c:70
+    #13 0x7f8782436634  (/usr/lib/libc.so.6+0x27634) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #14 0x7f87824366e8 in __libc_start_main (/usr/lib/libc.so.6+0x276e8) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #15 0x560256833864 in _start (/home/vizn3r/dev/poker/build/game+0x3864) (BuildId: ffdc2d9dcec9a338e594154a9596cde6fb5200a6)
+
+0x7bb7811e0052 is located 18 bytes inside of 24-byte region [0x7bb7811e0040,0x7bb7811e0058)
+freed by thread T0 here:
+    #0 0x7f878271f79d in free /usr/src/debug/gcc/gcc/libsanitizer/asan/asan_malloc_linux.cpp:51
+    #1 0x560256835e50 in tui_free /home/vizn3r/dev/poker/src/tui.c:39
+
+previously allocated by thread T0 here:
+    #0 0x7f8782720cb5 in malloc /usr/src/debug/gcc/gcc/libsanitizer/asan/asan_malloc_linux.cpp:67
+    #1 0x560256835c0e in tui_init /home/vizn3r/dev/poker/src/tui.c:21
+
+SUMMARY: AddressSanitizer: heap-use-after-free /home/vizn3r/dev/poker/src/tui.c:97 in tui_clear
+Shadow bytes around the buggy address:
+  0x7bb7811dfd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7bb7811dfe00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7bb7811dfe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7bb7811dff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7bb7811dff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x7bb7811e0000: fa fa 00 00 00 fa fa fa fd fd[fd]fa fa fa fa fa
+  0x7bb7811e0080: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7bb7811e0100: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7bb7811e0180: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7bb7811e0200: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7bb7811e0280: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==137961==ABORTING
+=================================================================
+==140635==ERROR: AddressSanitizer: heap-use-after-free on address 0x7ba7bade0052 at pc 0x56240c5aa73e bp 0x7ffc15bd75b0 sp 0x7ffc15bd75a0
+READ of size 2 at 0x7ba7bade0052 thread T0
+    #0 0x56240c5aa73d in tui_clear /home/vizn3r/dev/poker/src/tui.c:98
+    #1 0x56240c5a7959 in quitter /home/vizn3r/dev/poker/main.c:101
+    #2 0x7f77bc04fc70  (/usr/lib/libc.so.6+0x40c70) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #3 0x7f77bc04fd4d in exit (/usr/lib/libc.so.6+0x40d4d) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #4 0x56240c5aba98 in tui_resize /home/vizn3r/dev/poker/src/tui.c:268
+    #5 0x7f77bc04d4cf  (/usr/lib/libc.so.6+0x3e4cf) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #6 0x7f77bc0a218d  (/usr/lib/libc.so.6+0x9318d) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #7 0x7f77bc0a21b3  (/usr/lib/libc.so.6+0x931b3) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #8 0x7f77bc11ca6d in read (/usr/lib/libc.so.6+0x10da6d) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #9 0x7f77bc285ba4 in read /usr/src/debug/gcc/gcc/libsanitizer/sanitizer_common/sanitizer_common_interceptors.inc:1011
+    #10 0x56240c5abbf1 in input_get_key /home/vizn3r/dev/poker/src/input.c:22
+    #11 0x56240c5a759b in main /home/vizn3r/dev/poker/main.c:70
+    #12 0x7f77bc036634  (/usr/lib/libc.so.6+0x27634) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #13 0x7f77bc0366e8 in __libc_start_main (/usr/lib/libc.so.6+0x276e8) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #14 0x56240c5a7864 in _start (/home/vizn3r/dev/poker/build/game+0x3864) (BuildId: f754ad85ed9fd9b776c0be6e9243f74516c931ed)
+
+0x7ba7bade0052 is located 18 bytes inside of 24-byte region [0x7ba7bade0040,0x7ba7bade0058)
+freed by thread T0 here:
+    #0 0x7f77bc31f79d in free /usr/src/debug/gcc/gcc/libsanitizer/asan/asan_malloc_linux.cpp:51
+    #1 0x56240c5a9e50 in tui_free /home/vizn3r/dev/poker/src/tui.c:40
+
+previously allocated by thread T0 here:
+    #0 0x7f77bc320cb5 in malloc /usr/src/debug/gcc/gcc/libsanitizer/asan/asan_malloc_linux.cpp:67
+    #1 0x56240c5a9c0e in tui_init /home/vizn3r/dev/poker/src/tui.c:22
+
+SUMMARY: AddressSanitizer: heap-use-after-free /home/vizn3r/dev/poker/src/tui.c:98 in tui_clear
+Shadow bytes around the buggy address:
+  0x7ba7baddfd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7ba7baddfe00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7ba7baddfe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7ba7baddff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7ba7baddff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x7ba7bade0000: fa fa 00 00 00 fa fa fa fd fd[fd]fa fa fa fa fa
+  0x7ba7bade0080: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7ba7bade0100: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7ba7bade0180: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7ba7bade0200: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7ba7bade0280: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==140635==ABORTING
+=================================================================
+==141320==ERROR: AddressSanitizer: heap-use-after-free on address 0x7bf3c2fe0052 at pc 0x564f5efc073e bp 0x7fff32290710 sp 0x7fff32290700
+READ of size 2 at 0x7bf3c2fe0052 thread T0
+    #0 0x564f5efc073d in tui_clear /home/vizn3r/dev/poker/src/tui.c:98
+    #1 0x564f5efbd959 in quitter /home/vizn3r/dev/poker/main.c:101
+    #2 0x7fc3c424fc70  (/usr/lib/libc.so.6+0x40c70) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #3 0x7fc3c424fd4d in exit (/usr/lib/libc.so.6+0x40d4d) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #4 0x564f5efbd976 in quitter /home/vizn3r/dev/poker/main.c:104
+    #5 0x564f5efbd647 in main /home/vizn3r/dev/poker/main.c:93
+    #6 0x7fc3c4236634  (/usr/lib/libc.so.6+0x27634) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #7 0x7fc3c42366e8 in __libc_start_main (/usr/lib/libc.so.6+0x276e8) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #8 0x564f5efbd864 in _start (/home/vizn3r/dev/poker/build/game+0x3864) (BuildId: 2ae31604f200e4a3b9ffa7a4b3b8db4b252ec0b1)
+
+0x7bf3c2fe0052 is located 18 bytes inside of 24-byte region [0x7bf3c2fe0040,0x7bf3c2fe0058)
+freed by thread T0 here:
+    #0 0x7fc3c451f79d in free /usr/src/debug/gcc/gcc/libsanitizer/asan/asan_malloc_linux.cpp:51
+    #1 0x564f5efbfe50 in tui_free /home/vizn3r/dev/poker/src/tui.c:40
+
+previously allocated by thread T0 here:
+    #0 0x7fc3c4520cb5 in malloc /usr/src/debug/gcc/gcc/libsanitizer/asan/asan_malloc_linux.cpp:67
+    #1 0x564f5efbfc0e in tui_init /home/vizn3r/dev/poker/src/tui.c:22
+
+SUMMARY: AddressSanitizer: heap-use-after-free /home/vizn3r/dev/poker/src/tui.c:98 in tui_clear
+Shadow bytes around the buggy address:
+  0x7bf3c2fdfd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7bf3c2fdfe00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7bf3c2fdfe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7bf3c2fdff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7bf3c2fdff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x7bf3c2fe0000: fa fa 00 00 00 fa fa fa fd fd[fd]fa fa fa fa fa
+  0x7bf3c2fe0080: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7bf3c2fe0100: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7bf3c2fe0180: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7bf3c2fe0200: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7bf3c2fe0280: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==141320==ABORTING
+=================================================================
+==141540==ERROR: AddressSanitizer: heap-use-after-free on address 0x7b374e7e0052 at pc 0x55d6ace4d73e bp 0x7ffdbf3f16e0 sp 0x7ffdbf3f16d0
+READ of size 2 at 0x7b374e7e0052 thread T0
+    #0 0x55d6ace4d73d in tui_clear /home/vizn3r/dev/poker/src/tui.c:98
+    #1 0x55d6ace4a959 in quitter /home/vizn3r/dev/poker/main.c:101
+    #2 0x7f074fa4fc70  (/usr/lib/libc.so.6+0x40c70) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #3 0x7f074fa4fd4d in exit (/usr/lib/libc.so.6+0x40d4d) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #4 0x55d6ace4a976 in quitter /home/vizn3r/dev/poker/main.c:104
+    #5 0x55d6ace4a647 in main /home/vizn3r/dev/poker/main.c:93
+    #6 0x7f074fa36634  (/usr/lib/libc.so.6+0x27634) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #7 0x7f074fa366e8 in __libc_start_main (/usr/lib/libc.so.6+0x276e8) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #8 0x55d6ace4a864 in _start (/home/vizn3r/dev/poker/build/game+0x3864) (BuildId: 2ae31604f200e4a3b9ffa7a4b3b8db4b252ec0b1)
+
+0x7b374e7e0052 is located 18 bytes inside of 24-byte region [0x7b374e7e0040,0x7b374e7e0058)
+freed by thread T0 here:
+    #0 0x7f074fd1f79d in free /usr/src/debug/gcc/gcc/libsanitizer/asan/asan_malloc_linux.cpp:51
+    #1 0x55d6ace4ce50 in tui_free /home/vizn3r/dev/poker/src/tui.c:40
+
+previously allocated by thread T0 here:
+    #0 0x7f074fd20cb5 in malloc /usr/src/debug/gcc/gcc/libsanitizer/asan/asan_malloc_linux.cpp:67
+    #1 0x55d6ace4cc0e in tui_init /home/vizn3r/dev/poker/src/tui.c:22
+
+SUMMARY: AddressSanitizer: heap-use-after-free /home/vizn3r/dev/poker/src/tui.c:98 in tui_clear
+Shadow bytes around the buggy address:
+  0x7b374e7dfd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b374e7dfe00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b374e7dfe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b374e7dff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b374e7dff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x7b374e7e0000: fa fa 00 00 00 fa fa fa fd fd[fd]fa fa fa fa fa
+  0x7b374e7e0080: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b374e7e0100: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b374e7e0180: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b374e7e0200: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b374e7e0280: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==141540==ABORTING
+=================================================================
+==141763==ERROR: AddressSanitizer: heap-use-after-free on address 0x7b3d42fe0040 at pc 0x564ab0b9be64 bp 0x7ffc1a1f3860 sp 0x7ffc1a1f3850
+READ of size 8 at 0x7b3d42fe0040 thread T0
+    #0 0x564ab0b9be63 in tui_free /home/vizn3r/dev/poker/src/tui.c:38
+    #1 0x564ab0b99959 in quitter /home/vizn3r/dev/poker/main.c:101
+    #2 0x7f0d4424fc70  (/usr/lib/libc.so.6+0x40c70) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #3 0x7f0d4424fd4d in exit (/usr/lib/libc.so.6+0x40d4d) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #4 0x564ab0b9996a in quitter /home/vizn3r/dev/poker/main.c:103
+    #5 0x564ab0b99647 in main /home/vizn3r/dev/poker/main.c:93
+    #6 0x7f0d44236634  (/usr/lib/libc.so.6+0x27634) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #7 0x7f0d442366e8 in __libc_start_main (/usr/lib/libc.so.6+0x276e8) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #8 0x564ab0b99864 in _start (/home/vizn3r/dev/poker/build/game+0x3864) (BuildId: 7810bf855262228ea26ea86ac8ef56ac1793c915)
+
+0x7b3d42fe0040 is located 0 bytes inside of 24-byte region [0x7b3d42fe0040,0x7b3d42fe0058)
+freed by thread T0 here:
+    #0 0x7f0d4451f79d in free /usr/src/debug/gcc/gcc/libsanitizer/asan/asan_malloc_linux.cpp:51
+    #1 0x564ab0b9be10 in tui_free /home/vizn3r/dev/poker/src/tui.c:40
+
+previously allocated by thread T0 here:
+    #0 0x7f0d44520cb5 in malloc /usr/src/debug/gcc/gcc/libsanitizer/asan/asan_malloc_linux.cpp:67
+    #1 0x564ab0b9bbce in tui_init /home/vizn3r/dev/poker/src/tui.c:22
+
+SUMMARY: AddressSanitizer: heap-use-after-free /home/vizn3r/dev/poker/src/tui.c:38 in tui_free
+Shadow bytes around the buggy address:
+  0x7b3d42fdfd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b3d42fdfe00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b3d42fdfe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b3d42fdff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b3d42fdff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x7b3d42fe0000: fa fa 00 00 00 fa fa fa[fd]fd fd fa fa fa fa fa
+  0x7b3d42fe0080: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b3d42fe0100: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b3d42fe0180: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b3d42fe0200: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b3d42fe0280: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==141763==ABORTING
+=================================================================
+==142443==ERROR: AddressSanitizer: heap-use-after-free on address 0x7b54e51e0040 at pc 0x55900a4ade80 bp 0x7ffc67dc1860 sp 0x7ffc67dc1850
+READ of size 8 at 0x7b54e51e0040 thread T0
+    #0 0x55900a4ade7f in tui_free /home/vizn3r/dev/poker/src/tui.c:40
+    #1 0x55900a4ab959 in quitter /home/vizn3r/dev/poker/main.c:101
+    #2 0x7f24e644fc70  (/usr/lib/libc.so.6+0x40c70) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #3 0x7f24e644fd4d in exit (/usr/lib/libc.so.6+0x40d4d) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #4 0x55900a4ab96a in quitter /home/vizn3r/dev/poker/main.c:103
+    #5 0x55900a4ab647 in main /home/vizn3r/dev/poker/main.c:93
+    #6 0x7f24e6436634  (/usr/lib/libc.so.6+0x27634) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #7 0x7f24e64366e8 in __libc_start_main (/usr/lib/libc.so.6+0x276e8) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #8 0x55900a4ab864 in _start (/home/vizn3r/dev/poker/build/game+0x3864) (BuildId: fcbf1c0d593c73ccfede6c6a350f11175c1e060d)
+
+0x7b54e51e0040 is located 0 bytes inside of 24-byte region [0x7b54e51e0040,0x7b54e51e0058)
+freed by thread T0 here:
+    #0 0x7f24e671f79d in free /usr/src/debug/gcc/gcc/libsanitizer/asan/asan_malloc_linux.cpp:51
+    #1 0x55900a4ade1d in tui_free /home/vizn3r/dev/poker/src/tui.c:42
+
+previously allocated by thread T0 here:
+    #0 0x7f24e6720cb5 in malloc /usr/src/debug/gcc/gcc/libsanitizer/asan/asan_malloc_linux.cpp:67
+    #1 0x55900a4adbce in tui_init /home/vizn3r/dev/poker/src/tui.c:22
+
+SUMMARY: AddressSanitizer: heap-use-after-free /home/vizn3r/dev/poker/src/tui.c:40 in tui_free
+Shadow bytes around the buggy address:
+  0x7b54e51dfd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b54e51dfe00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b54e51dfe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b54e51dff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b54e51dff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x7b54e51e0000: fa fa 00 00 00 fa fa fa[fd]fd fd fa fa fa fa fa
+  0x7b54e51e0080: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b54e51e0100: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b54e51e0180: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b54e51e0200: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b54e51e0280: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==142443==ABORTING
+=================================================================
+==142658==ERROR: AddressSanitizer: heap-use-after-free on address 0x7be8663e0040 at pc 0x56492394ae86 bp 0x7fff198846d0 sp 0x7fff198846c0
+READ of size 8 at 0x7be8663e0040 thread T0
+    #0 0x56492394ae85 in tui_free /home/vizn3r/dev/poker/src/tui.c:38
+    #1 0x564923948959 in quitter /home/vizn3r/dev/poker/main.c:101
+    #2 0x7fb86764fc70  (/usr/lib/libc.so.6+0x40c70) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #3 0x7fb86764fd4d in exit (/usr/lib/libc.so.6+0x40d4d) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #4 0x56492394896a in quitter /home/vizn3r/dev/poker/main.c:103
+    #5 0x564923948647 in main /home/vizn3r/dev/poker/main.c:93
+    #6 0x7fb867636634  (/usr/lib/libc.so.6+0x27634) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #7 0x7fb8676366e8 in __libc_start_main (/usr/lib/libc.so.6+0x276e8) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #8 0x564923948864 in _start (/home/vizn3r/dev/poker/build/game+0x3864) (BuildId: b7276563453c863b9a8bd5e7fb0aeb4c2cd86691)
+
+0x7be8663e0040 is located 0 bytes inside of 24-byte region [0x7be8663e0040,0x7be8663e0058)
+freed by thread T0 here:
+    #0 0x7fb86791f79d in free /usr/src/debug/gcc/gcc/libsanitizer/asan/asan_malloc_linux.cpp:51
+    #1 0x56492394ae22 in tui_free /home/vizn3r/dev/poker/src/tui.c:42
+
+previously allocated by thread T0 here:
+    #0 0x7fb867920cb5 in malloc /usr/src/debug/gcc/gcc/libsanitizer/asan/asan_malloc_linux.cpp:67
+    #1 0x56492394abce in tui_init /home/vizn3r/dev/poker/src/tui.c:22
+
+SUMMARY: AddressSanitizer: heap-use-after-free /home/vizn3r/dev/poker/src/tui.c:38 in tui_free
+Shadow bytes around the buggy address:
+  0x7be8663dfd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7be8663dfe00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7be8663dfe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7be8663dff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7be8663dff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x7be8663e0000: fa fa 00 00 00 fa fa fa[fd]fd fd fa fa fa fa fa
+  0x7be8663e0080: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7be8663e0100: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7be8663e0180: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7be8663e0200: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7be8663e0280: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==142658==ABORTING
+=================================================================
+==142720==ERROR: AddressSanitizer: heap-use-after-free on address 0x7b870cfe0040 at pc 0x55ef1e355e86 bp 0x7fff94969290 sp 0x7fff94969280
+READ of size 8 at 0x7b870cfe0040 thread T0
+    #0 0x55ef1e355e85 in tui_free /home/vizn3r/dev/poker/src/tui.c:38
+    #1 0x55ef1e353959 in quitter /home/vizn3r/dev/poker/main.c:101
+    #2 0x7f570e24fc70  (/usr/lib/libc.so.6+0x40c70) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #3 0x7f570e24fd4d in exit (/usr/lib/libc.so.6+0x40d4d) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #4 0x55ef1e35396a in quitter /home/vizn3r/dev/poker/main.c:103
+    #5 0x55ef1e353647 in main /home/vizn3r/dev/poker/main.c:93
+    #6 0x7f570e236634  (/usr/lib/libc.so.6+0x27634) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #7 0x7f570e2366e8 in __libc_start_main (/usr/lib/libc.so.6+0x276e8) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #8 0x55ef1e353864 in _start (/home/vizn3r/dev/poker/build/game+0x3864) (BuildId: b7276563453c863b9a8bd5e7fb0aeb4c2cd86691)
+
+0x7b870cfe0040 is located 0 bytes inside of 24-byte region [0x7b870cfe0040,0x7b870cfe0058)
+freed by thread T0 here:
+    #0 0x7f570e51f79d in free /usr/src/debug/gcc/gcc/libsanitizer/asan/asan_malloc_linux.cpp:51
+    #1 0x55ef1e355e22 in tui_free /home/vizn3r/dev/poker/src/tui.c:42
+
+previously allocated by thread T0 here:
+    #0 0x7f570e520cb5 in malloc /usr/src/debug/gcc/gcc/libsanitizer/asan/asan_malloc_linux.cpp:67
+    #1 0x55ef1e355bce in tui_init /home/vizn3r/dev/poker/src/tui.c:22
+
+SUMMARY: AddressSanitizer: heap-use-after-free /home/vizn3r/dev/poker/src/tui.c:38 in tui_free
+Shadow bytes around the buggy address:
+  0x7b870cfdfd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b870cfdfe00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b870cfdfe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b870cfdff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b870cfdff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x7b870cfe0000: fa fa 00 00 00 fa fa fa[fd]fd fd fa fa fa fa fa
+  0x7b870cfe0080: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b870cfe0100: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b870cfe0180: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b870cfe0200: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b870cfe0280: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==142720==ABORTING
