@@ -60,6 +60,8 @@ struct tui_ascii *tui_ascii_arr(char **arr, size_t len);
 // Creates a new tui_ascii box
 struct tui_ascii *tui_ascii_box(size_t w, size_t h);
 
+void tui_ascii_free(struct tui_ascii *ascii);
+
 // Checks if the tui should be resized
 void tui_resize(struct tui_ui *ui);
 

@@ -15,7 +15,7 @@ struct tui_ui *tui_init(void) {
   ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
   struct tui_ui *ui = (struct tui_ui *)malloc(sizeof(struct tui_ui));
 
-  ui->h = ws.ws_row - 2;
+  ui->h = ws.ws_row;
   ui->w = ws.ws_col;
 
   ui->buff = (char *)calloc(ui->h * ui->w * 4, sizeof(char)); // 4 bytes per char
@@ -29,21 +29,21 @@ struct tui_ui *tui_init(void) {
 }
 
 void tui_free(struct tui_ui *ui) {
-  printf("\033[H\033[J");
-  fflush(stdout);
   free(ui->buff);
   free(ui->cells);
   free(ui);
+  printf("\033[H\033[J");
   printf("\033[?1049l");
   printf("\033[?25h");
+  fflush(stdout);
 }
 
 void tui_render(struct tui_ui *ui) {
   printf("\033[?25l\033[1;1H");
   fflush(stdout);
+  size_t cursor = 0;
   memset(ui->buff, 0, ui->h * ui->w * 4);
 
-  size_t cursor = 0;
   for (uint32_t i = 0; i < ui->h * ui->w; i++) {
     memcpy(&ui->buff[cursor], ui->cells[i].c, ui->cells[i].size);
     cursor += ui->cells[i].size;
@@ -85,9 +85,13 @@ size_t utf8_strlen(char *text) {
 }
 
 void tui_text(struct tui_ui *ui, uint16_t x, uint16_t y, char *text) {
+  if (y >= ui->h)
+    return;
   uint16_t i = 0;
   uint16_t col = 0;
   while (text[i] != '\0') {
+    if (x + col >= ui->w)
+      return;
     size_t size = utf8_char_size(text[i]);
     memcpy(ui->cells[y * ui->w + x + col].c, &text[i], size);
     ui->cells[y * ui->w + x + col].size = size;
@@ -97,10 +101,14 @@ void tui_text(struct tui_ui *ui, uint16_t x, uint16_t y, char *text) {
 }
 
 void tui_centered_text(struct tui_ui *ui, uint16_t x, uint16_t y, char *text) {
+  if (y >= ui->h)
+    return;
   size_t len = utf8_strlen(text);
   uint16_t i = 0;
   uint16_t col = 0;
   while (text[i] != '\0') {
+    if (x + col >= ui->w)
+      return;
     size_t size = utf8_char_size(text[i]);
     memcpy(ui->cells[y * ui->w + x + col - len / 2].c, &text[i], size);
     ui->cells[y * ui->w + x + col - len / 2].size = size;
@@ -110,10 +118,14 @@ void tui_centered_text(struct tui_ui *ui, uint16_t x, uint16_t y, char *text) {
 }
 
 void tui_ascii(struct tui_ui *ui, uint16_t x, uint16_t y, struct tui_ascii *ascii) {
+  if (y >= ui->h)
+    return;
   for (uint16_t row = 0; row < ascii->h; row++) {
     uint16_t i = 0;
     uint16_t col = 0;
     while (ascii->buff[row][i] != '\0') {
+      if (x + col >= ui->w)
+        return;
       size_t size = utf8_char_size(ascii->buff[row][i]);
       memcpy(ui->cells[(y + row) * ui->w + x + col].c, &ascii->buff[row][i], size);
       ui->cells[(y + row) * ui->w + x + col].size = size;
@@ -124,10 +136,14 @@ void tui_ascii(struct tui_ui *ui, uint16_t x, uint16_t y, struct tui_ascii *asci
 }
 
 void tui_centered_ascii(struct tui_ui *ui, uint16_t x, uint16_t y, struct tui_ascii *ascii) {
+  if (y >= ui->h)
+    return;
   for (uint16_t row = 0; row < ascii->h; row++) {
     uint16_t i = 0;
     uint16_t col = 0;
     while (ascii->buff[row][i] != '\0') {
+      if (x + col >= ui->w)
+        return;
       size_t size = utf8_char_size(ascii->buff[row][i]);
       memcpy(ui->cells[(y + row) * ui->w + x + col - ascii->w / 2].c, &ascii->buff[row][i], size);
       ui->cells[(y + row) * ui->w + x + col - ascii->w / 2].size = size;
@@ -136,12 +152,12 @@ void tui_centered_ascii(struct tui_ui *ui, uint16_t x, uint16_t y, struct tui_as
     }
   }
 }
-#define ASCII_BOX_VERT "│"
-#define ASCII_BOX_HORIZ "─"
-#define ASCII_BOX_CORNER_TL "┌"
-#define ASCII_BOX_CORNER_TR "┐"
-#define ASCII_BOX_CORNER_BL "└"
-#define ASCII_BOX_CORNER_BR "┘"
+#define ASCII_BOX_VERT "║"
+#define ASCII_BOX_HORIZ "═"
+#define ASCII_BOX_CORNER_TL "╔"
+#define ASCII_BOX_CORNER_TR "╗"
+#define ASCII_BOX_CORNER_BL "╚"
+#define ASCII_BOX_CORNER_BR "╝"
 
 struct tui_ascii *tui_ascii_box(size_t w, size_t h) {
   struct tui_ascii *ascii = (struct tui_ascii *)malloc(sizeof(struct tui_ascii));
@@ -179,6 +195,14 @@ struct tui_ascii *tui_ascii_box(size_t w, size_t h) {
   }
 
   return ascii;
+}
+
+void tui_ascii_free(struct tui_ascii *ascii) {
+  for (uint16_t i = 0; i < ascii->h; i++) {
+    free(ascii->buff[i]);
+  }
+  free(ascii->buff);
+  free(ascii);
 }
 
 void tui_resize(struct tui_ui *ui) {

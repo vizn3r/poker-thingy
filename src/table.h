@@ -19,6 +19,10 @@ struct table_deck {
 
 struct table_deck *table_deck_init(uint16_t n_decks);
 
+void table_deck_reset(struct table_deck *deck);
+
+void table_deck_free(struct table_deck *deck);
+
 void table_deck_shuffle(struct table_deck *deck);
 
 struct table_card *table_deck_draw(struct table_deck *deck);

@@ -8,26 +8,25 @@ void input_enable_raw_mode(void) {
   tcgetattr(STDIN_FILENO, &oldt);
   newt = oldt;
   newt.c_lflag &= ~(ICANON | ECHO);
+  newt.c_cc[VTIME] = 0;
+  newt.c_cc[VMIN] = 1;
   tcsetattr(STDIN_FILENO, TCSANOW, &newt);
 }
 
 void input_disable_raw_mode(void) {
-  tcgetattr(STDIN_FILENO, &oldt);
-  newt = oldt;
-  newt.c_lflag |= (ICANON | ECHO);
-  tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+  tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
 }
 
 int input_get_key(void) {
   char c;
   if (read(STDIN_FILENO, &c, 1) <= 0)
-    return 0;
+    return -1;
 
   if (c == 27) {
-    char seq[4];
-    if (read(STDIN_FILENO, &seq[0], 1) != 1)
+    char seq[2];
+    if (read(STDIN_FILENO, &seq[0], 1) <= 0)
       return INPUT_KEY_ESC;
-    if (read(STDIN_FILENO, &seq[1], 1) != 1)
+    if (read(STDIN_FILENO, &seq[1], 1) <= 0)
       return INPUT_KEY_ESC;
 
     if (seq[0] == '[') {
@@ -41,10 +40,11 @@ int input_get_key(void) {
       case 'D':
         return INPUT_KEY_LEFT;
       default:
-        return 0; // unknown escape sequence, ignore
+        return -1;
       }
     }
     return INPUT_KEY_ESC;
   }
+
   return c;
 }

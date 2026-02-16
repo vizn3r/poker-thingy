@@ -1,6 +1,4 @@
 #include "input.h"
-
-#define GAME_TITLE "A Casino Game"
 #include "menu.h"
 #include "poker.h"
 #include "tui.h"
@@ -20,6 +18,7 @@ enum game_state state = MENU;
 struct poker_game *poker_game = NULL;
 
 void signal_handler(int signal);
+void quitter(void);
 
 int main(void) {
   ui = tui_init();
@@ -83,12 +82,17 @@ int main(void) {
   }
 
 exit:
-
-  tui_clear(ui);
-  tui_free(ui);
-  input_disable_raw_mode();
+  quitter();
 
   return 0;
+}
+
+void quitter(void) {
+  input_disable_raw_mode();
+  menu_free();
+  tui_clear(ui);
+  tui_free(ui);
+  exit(EXIT_SUCCESS);
 }
 
 void signal_handler(int signal) {
@@ -96,9 +100,7 @@ void signal_handler(int signal) {
   case SIGINT:
   case SIGQUIT:
   case SIGTERM:
-    input_disable_raw_mode();
-    tui_free(ui);
-    exit(EXIT_SUCCESS);
+    quitter();
     break;
   case SIGWINCH:
     tui_resize(ui);

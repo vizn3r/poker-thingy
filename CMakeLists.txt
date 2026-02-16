@@ -4,7 +4,8 @@ project(game C)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
-add_compile_options(-Wall -Wextra -pedantic -O2)
+add_compile_options(-Wall -Wextra -pedantic -O2 -fsanitize=address)
+add_link_options(-fsanitize=address)
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
