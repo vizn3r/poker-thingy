@@ -36,6 +36,14 @@ const char *poker_states[] = {
     "Round End",
 };
 
+const char *poker_actions[] = {
+    "[F]old",
+    "[C]heck/Call",
+    "[B]et",
+    "[R]aise",
+    "[A]ll In",
+};
+
 void poker_deal(void);
 
 struct poker_game *poker_init(void) {
@@ -80,13 +88,9 @@ void poker_free(struct poker_game *game) {
 
 // Handle all the displaying of the poker game
 // TODO:
-//   - Show board
-//   - Show main player's cards
-//   - Show dealer/sb/bb chip
 //   - Show pot/side pots
 //   - Show all player's chips
 //   - Show player's available actions
-//   - Show current poker state
 void poker_display(struct tui_ui *ui, struct poker_game *game) {
   if (game == NULL)
     return;
@@ -142,20 +146,75 @@ void poker_display(struct tui_ui *ui, struct poker_game *game) {
 
   // Show current poker state
   tui_centered_text(ui, ui->w / 2, 8 / 9 * ui->h, (char *)poker_states[game->state]);
-  char rounds_played[40];
+  char rounds_played[32];
   sprintf(rounds_played, "Round %d", game->rounds_played);
   tui_centered_text(ui, ui->w / 2, 8 / 9 * ui->h + 1, rounds_played);
+
+  // Show main player's actions
+  char actions[64];
+  for (enum poker_player_action action = PLAYER_ACTION_FOLD; action < PLAYER_ACTION_MAX; action++) {
+    if (game->main_player->possible_actions & action) {
+      strcat(actions, (char *)poker_actions[action - 1]);
+    }
+  }
+  tui_centered_text(ui, ui->w / 2, 8 / 9 * ui->h + 2, actions);
 }
 
-int last_key = 0;
+int last_key = -1;
 void poker_input(struct poker_game *game, int key) {
   (void)game;
   last_key = key;
 }
 
 // Check what the player can do
-void poker_check_player_actions(struct poker_game *game, size_t player_id) {
-  switch (game->players[player_id]->role) {
+// Player can:
+//  PLAYER_ACTION_NONE       - default state or when player folded or went all in
+//  PLAYER_ACTION_FOLD       withdrawing - player fold - cards get returned, bet goes to the pot
+//  PLAYER_ACTION_CHECK_CALL coninuing - player checks - passes turn, or calls the current bet, then passes turn
+//  PLAYER_ACTION_BET        bet - player calls the current bet, then passes turn
+//  PLAYER_ACTION_RAISE      raise - player calls the current bet, then passes turn
+//  PLAYER_ACTION_ALL_IN     all in - player goes all in - special rules
+//
+void poker_check_player_possible_actions(struct poker_game *game, size_t player_id) {
+  struct poker_player *player = game->players[player_id];
+
+  // Check if player is folded
+  if (player->folded) {
+    player->possible_actions = 0;
+    return;
+  }
+
+  // Check bets
+  if (game->current_bet > player->bet) {
+    player->possible_actions = PLAYER_ACTION_RAISE | PLAYER_ACTION_ALL_IN | PLAYER_ACTION_CHECK_CALL | PLAYER_ACTION_FOLD;
+    return;
+  }
+  if (game->current_bet == 0) {
+    player->possible_actions = PLAYER_ACTION_BET | PLAYER_ACTION_ALL_IN | PLAYER_ACTION_CHECK_CALL | PLAYER_ACTION_FOLD;
+    return;
+  }
+
+  // Default
+  player->possible_actions = PLAYER_ACTION_CHECK_CALL | PLAYER_ACTION_ALL_IN | PLAYER_ACTION_BET | PLAYER_ACTION_FOLD;
+}
+
+void poker_player_do_action(struct poker_game *game, size_t player_id, enum poker_player_action action) {
+  struct poker_player *player = game->players[player_id];
+  switch (action) {
+  case PLAYER_ACTION_FOLD:
+    player->folded = true;
+    break;
+  case PLAYER_ACTION_CHECK_CALL:
+    // Nothing spectacular
+    break;
+  case PLAYER_ACTION_BET:
+    break;
+  case PLAYER_ACTION_RAISE:
+    break;
+  case PLAYER_ACTION_ALL_IN:
+    break;
+  default:
+    break;
   }
 }
 
@@ -208,6 +267,8 @@ bool poker_play(struct tui_ui *ui, struct poker_game *game) {
 
   // Players call/check/fold/raise
   case POKER_PREFLOP:
+    // TODO: For now, just check main player - always idx 0
+    poker_check_player_possible_actions(game, 0);
     game->state = POKER_FLOP;
     break;
 
@@ -218,6 +279,9 @@ bool poker_play(struct tui_ui *ui, struct poker_game *game) {
     }
     game->n_cards = 3;
 
+    // TODO: For now, just check main player - always idx 0
+    poker_check_player_possible_actions(game, 0);
+
     game->state = POKER_TURN;
     break;
 
@@ -226,6 +290,9 @@ bool poker_play(struct tui_ui *ui, struct poker_game *game) {
     game->cards[3] = table_deck_draw(game->deck);
     game->n_cards = 4;
 
+    // TODO: For now, just check main player - always idx 0
+    poker_check_player_possible_actions(game, 0);
+
     game->state = POKER_RIVER;
     break;
 
@@ -233,6 +300,9 @@ bool poker_play(struct tui_ui *ui, struct poker_game *game) {
   case POKER_RIVER:
     game->cards[4] = table_deck_draw(game->deck);
     game->n_cards = 5;
+
+    // TODO: For now, just check main player - always idx 0
+    poker_check_player_possible_actions(game, 0);
 
     game->state = POKER_SHOW_CARDS;
     break;

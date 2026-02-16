@@ -16,18 +16,22 @@ enum poker_player_action {
   PLAYER_ACTION_NONE,
   PLAYER_ACTION_FOLD,
   PLAYER_ACTION_CHECK_CALL,
-  PLAYER_ACTION_BET_RAISE,
-  PLAYER_ACTION_ALL_IN
+  PLAYER_ACTION_BET,
+  PLAYER_ACTION_RAISE,
+  PLAYER_ACTION_ALL_IN,
+
+  PLAYER_ACTION_MAX // For looping purposes
 };
 
 struct poker_player {
   struct table_card *cards[2];
   char *name;
   uint64_t money;
+  uint64_t bet;
   bool folded;
   enum poker_player_role role;
   enum poker_player_action action;
-  enum poker_player_action possible_actions[4];
+  enum poker_player_action possible_actions;
 };
 
 enum poker_game_state {
@@ -65,6 +69,7 @@ struct poker_game {
 
   // Money
   uint64_t pot;
+  uint64_t current_bet;
   uint64_t *side_pots;
   size_t n_side_pots;
   uint64_t small_blind;
