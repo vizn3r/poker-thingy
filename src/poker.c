@@ -92,7 +92,6 @@ void poker_free(struct poker_game *game) {
   free(game->discard);
   free(game->main_player);
   free(game->side_pots);
-  free(game->cards);
   free(game->board);
   free(game);
 }
