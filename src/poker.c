@@ -81,7 +81,18 @@ struct poker_game *poker_init(void) {
 }
 
 void poker_free(struct poker_game *game) {
+  for (size_t i = 0; i < game->n_players; i++) {
+    free(game->players[i]);
+  }
   free(game->players);
+  for (size_t i = 0; i < game->n_cards; i++) {
+    free(game->cards[i]);
+  }
+  free(game->deck);
+  free(game->discard);
+  free(game->main_player);
+  free(game->side_pots);
+  free(game->cards);
   free(game->board);
   free(game);
 }
@@ -146,12 +157,12 @@ void poker_display(struct tui_ui *ui, struct poker_game *game) {
 
   // Show current poker state
   tui_centered_text(ui, ui->w / 2, 8 / 9 * ui->h, (char *)poker_states[game->state]);
-  char rounds_played[32];
+  char rounds_played[32] = "";
   sprintf(rounds_played, "Round %d", game->rounds_played);
   tui_centered_text(ui, ui->w / 2, 8 / 9 * ui->h + 1, rounds_played);
 
   // Show main player's actions
-  char actions[64];
+  char actions[64] = "";
   for (enum poker_player_action action = PLAYER_ACTION_FOLD; action < PLAYER_ACTION_MAX; action++) {
     if (game->main_player->possible_actions & action) {
       strcat(actions, (char *)poker_actions[action - 1]);
