@@ -13,14 +13,14 @@ enum poker_player_role {
 };
 
 enum poker_player_action {
-  PLAYER_ACTION_NONE,
-  PLAYER_ACTION_FOLD,
-  PLAYER_ACTION_CHECK_CALL,
-  PLAYER_ACTION_BET,
-  PLAYER_ACTION_RAISE,
-  PLAYER_ACTION_ALL_IN,
+  PLAYER_ACTION_NONE = 0,
+  PLAYER_ACTION_FOLD = 1 << 0,
+  PLAYER_ACTION_CHECK_CALL = 1 << 1,
+  PLAYER_ACTION_BET = 1 << 2,
+  PLAYER_ACTION_RAISE = 1 << 3,
+  PLAYER_ACTION_ALL_IN = 1 << 4,
 
-  PLAYER_ACTION_MAX // For looping purposes
+  PLAYER_ACTION_MAX = 1 << 5 // For looping purposes
 };
 
 struct poker_player {
@@ -29,6 +29,7 @@ struct poker_player {
   uint64_t money;
   uint64_t bet;
   bool folded;
+  bool all_in;
   bool show_cards;
   enum poker_player_role role;
   enum poker_player_action action;
@@ -51,7 +52,6 @@ struct poker_game {
   // Game state
   struct poker_board *board;
   enum poker_game_state state;
-  enum poker_game_state next_state;
   uint32_t rounds_played;
 
   // 1st person player - main player

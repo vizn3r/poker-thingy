@@ -9,7 +9,7 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
-#define TUI_SHOW_GRID 1
+#define TUI_SHOW_GRID 0
 #define TUI_GRID_X 8
 #define TUI_GRID_Y 8
 
@@ -82,16 +82,16 @@ void tui_render(struct tui_ui *ui) {
   size_t cursor = 0;
   memset(ui->buff, 0, ui->h * ui->w * 4);
 
-  if (ui->w < 112 && ui->h < 28) {
+  if (ui->w < 130 && ui->h < 30) {
     tui_clear(ui);
     tui_text(ui, 1, 1, "Terminal too small!");
-    tui_text(ui, 1, 2, "Press [Q] to exit or resize your terminal!");
+    tui_text(ui, 1, 2, "Press [QQ] to exit or resize your terminal!");
   }
 
   if (ui->w > 200 && ui->h > 50) {
     tui_clear(ui);
     tui_text(ui, 1, 1, "Terminal too large!");
-    tui_text(ui, 1, 2, "Press [Q] to exit or resize your terminal!");
+    tui_text(ui, 1, 2, "Press [QQ] to exit or resize your terminal!");
   }
 
   for (uint32_t i = 0; i < ui->h * ui->w; i++) {

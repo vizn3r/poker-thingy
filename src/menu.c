@@ -23,7 +23,7 @@ void menu_main_print(struct tui_ui *ui) {
   struct tui_ascii *box = tui_ascii_box(41, 7);
   tui_centered_ascii(ui, ui->w / 2, ui->h / 2 - 1, box);
   tui_text(ui, ui->w / 2 - 18, ui->h / 2 + 1, "Press [P] to start");
-  tui_text(ui, ui->w / 2 - 18, ui->h / 2 + 2, "Press [Q] to exit");
+  tui_text(ui, ui->w / 2 - 18, ui->h / 2 + 2, "Press [QQ] to exit");
   tui_centered_text(ui, ui->w / 2, ui->h / 2 - 1, GAME_TITLE);
 
   tui_ascii_free(box);

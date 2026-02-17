@@ -16,4 +16,10 @@ void input_disable_raw_mode(void);
 
 int input_get_key(void);
 
+void input_check(void);
+
+void input_consume(void);
+
+void input_consume_next(void);
+
 void input_signal_handler(int signal);

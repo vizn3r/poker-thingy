@@ -4,7 +4,6 @@
 #include "tui.h"
 #include <signal.h>
 #include <stdint.h>
-#include <stdio.h>
 #include <stdlib.h>
 
 enum game_state {
@@ -14,6 +13,7 @@ enum game_state {
 
 struct tui_ui *ui;
 int key;
+bool quit_latch = 0;
 enum game_state state = MENU;
 
 struct poker_game *poker_game = NULL;
@@ -46,9 +46,32 @@ int main(void) {
   tui_render(ui);
 
   menu_log("Starting");
+  input_consume_next();
   for (;;) {
     tui_clear(ui);
     menu_log("Select input");
+    input_check();
+
+    switch ((state << 8) | input_get_key()) {
+    case (MENU << 8) | 'q':
+    case (MENU << 8) | 'Q':
+    case (POKER << 8) | 'q':
+    case (POKER << 8) | 'Q':
+    case (MENU << 8) | INPUT_KEY_ESC:
+    case (POKER << 8) | INPUT_KEY_ESC:
+      input_consume();
+      quitter();
+      break;
+    case (MENU << 8) | 'p':
+    case (MENU << 8) | 'P':
+      input_consume();
+      state = POKER;
+      break;
+      break;
+    default:
+      quit_latch = 0;
+      break;
+    }
 
     if (state == MENU)
       menu_main_print(ui);
@@ -62,31 +85,11 @@ int main(void) {
           continue;
         }
       }
-      poker_game->state = poker_game->next_state;
       poker_play(ui, poker_game);
       poker_display(ui, poker_game);
     }
 
     tui_render(ui);
-    key = input_get_key();
-    switch ((state << 8) | key) {
-    case (MENU << 8) | 'q':
-    case (MENU << 8) | 'Q':
-    case (POKER << 8) | 'q':
-    case (POKER << 8) | 'Q':
-    case (MENU << 8) | INPUT_KEY_ESC:
-    case (POKER << 8) | INPUT_KEY_ESC:
-      exit(EXIT_SUCCESS);
-    case (MENU << 8) | 'p':
-    case (MENU << 8) | 'P':
-      state = POKER;
-      break;
-    case (POKER << 8):
-      poker_input(poker_game, key);
-      break;
-    default:
-      continue;
-    }
   }
 
   return 0;
@@ -94,6 +97,14 @@ int main(void) {
 
 bool quitting = false;
 void quitter(void) {
+  // Require two presses of quit key
+  // To quit instantly, set quit_latch to 1 before calling
+  if (!quit_latch) {
+    quit_latch = 1;
+    return;
+  }
+
+  // Prevent multiple quits
   if (quitting)
     return;
   quitting = true;
@@ -113,6 +124,7 @@ void signal_handler(int signal) {
   case SIGSEGV:
   case SIGABRT:
   case SIGFPE:
+    quit_latch = 1;
     quitter();
     break;
   case SIGWINCH:
