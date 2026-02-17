@@ -51,6 +51,7 @@ struct poker_game {
   // Game state
   struct poker_board *board;
   enum poker_game_state state;
+  enum poker_game_state next_state;
   uint32_t rounds_played;
 
   // 1st person player - main player

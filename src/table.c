@@ -162,3 +162,22 @@ struct tui_ascii *table_card_ascii(struct table_card *card) {
 
   return ascii;
 }
+
+struct tui_ascii *table_card_back_ascii(void) {
+  struct tui_ascii *ascii = (struct tui_ascii *)malloc(sizeof(struct tui_ascii));
+  ascii->w = ascii_base_card.w;
+  ascii->h = ascii_base_card.h;
+  ascii->buff = (char **)malloc(sizeof(char *) * ascii->h);
+
+  for (uint16_t i = 0; i < ascii->h; i++) {
+    size_t len = strlen(ascii_base_card.buff[i]) + 1;
+    ascii->buff[i] = (char *)malloc(len);
+    memcpy(ascii->buff[i], ascii_base_card.buff[i], len);
+  }
+
+  ascii->buff[1][3] = 'X';
+  ascii->buff[3][7] = 'X';
+
+  memcpy(&ascii->buff[2][5], "\xe2\x80\x83", 3);
+  return ascii;
+}

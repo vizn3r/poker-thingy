@@ -9,7 +9,7 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
-#define TUI_SHOW_GRID false
+#define TUI_SHOW_GRID true
 #define TUI_GRID_X 8
 #define TUI_GRID_Y 8
 
@@ -245,6 +245,44 @@ struct tui_ascii *tui_ascii_box(size_t w, size_t h) {
         ch = ASCII_BOX_HORIZ;
       else if (j == 0 || j == w - 1)
         ch = ASCII_BOX_VERT;
+      else
+        ch = " ";
+
+      size_t len = strlen(ch);
+      memcpy(&ascii->buff[i][cursor], ch, len);
+      cursor += len;
+    }
+
+    ascii->buff[i][cursor] = '\0';
+  }
+
+  return ascii;
+}
+
+struct tui_ascii *tui_ascii_custom_box(size_t w, size_t h, struct tui_ascii_box box) {
+  struct tui_ascii *ascii = (struct tui_ascii *)malloc(sizeof(struct tui_ascii));
+  ascii->w = w;
+  ascii->h = h;
+  ascii->buff = (char **)malloc(sizeof(char *) * h);
+
+  for (uint16_t i = 0; i < h; i++) {
+    ascii->buff[i] = (char *)malloc(w * 4 + 1);
+    size_t cursor = 0;
+
+    for (uint16_t j = 0; j < w; j++) {
+      const char *ch;
+      if (i == 0 && j == 0)
+        ch = box.corner_tl;
+      else if (i == 0 && j == w - 1)
+        ch = box.corner_tr;
+      else if (i == h - 1 && j == 0)
+        ch = box.corner_bl;
+      else if (i == h - 1 && j == w - 1)
+        ch = box.corner_br;
+      else if (i == 0 || i == h - 1)
+        ch = box.horiz;
+      else if (j == 0 || j == w - 1)
+        ch = box.vert;
       else
         ch = " ";
 

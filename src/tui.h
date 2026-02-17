@@ -23,6 +23,15 @@ struct tui_ascii {
   uint16_t h;
 };
 
+struct tui_ascii_box {
+  char *vert;
+  char *horiz;
+  char *corner_tl;
+  char *corner_tr;
+  char *corner_bl;
+  char *corner_br;
+};
+
 // Basic functions
 
 // Initializes a new tui_ui struct
@@ -59,6 +68,8 @@ struct tui_ascii *tui_ascii_arr(char **arr, size_t len);
 
 // Creates a new tui_ascii box
 struct tui_ascii *tui_ascii_box(size_t w, size_t h);
+
+struct tui_ascii *tui_ascii_custom_box(size_t w, size_t h, struct tui_ascii_box box);
 
 void tui_ascii_free(struct tui_ascii *ascii);
 

@@ -62,6 +62,7 @@ int main(void) {
           continue;
         }
       }
+      poker_game->state = poker_game->next_state;
       poker_play(ui, poker_game);
       poker_display(ui, poker_game);
     }

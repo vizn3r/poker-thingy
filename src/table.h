@@ -28,3 +28,5 @@ void table_deck_shuffle(struct table_deck *deck);
 struct table_card *table_deck_draw(struct table_deck *deck);
 
 struct tui_ascii *table_card_ascii(struct table_card *card);
+
+struct tui_ascii *table_card_back_ascii(void);
