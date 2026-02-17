@@ -148,48 +148,37 @@ void poker_display(struct tui_ui *ui, struct poker_game *game) {
   tui_ascii_free(board);
 
   // Show main player's cards
+  uint8_t mp_x = ui->w / 2;
+  uint8_t mp_y = tui_gy(ui, 6);
+
   struct tui_ascii *mp_cards = tui_ascii_custom_box(17, 7, ascii_box_player);
-  tui_centered_ascii(ui, (ui->w / 2), ui->h / 2 + ui->h / 4, mp_cards);
-  if (mp->cards[0] != NULL && mp->cards[1] != NULL) {
-    struct tui_ascii *mp_card1 = table_card_ascii(mp->cards[0]);
-    struct tui_ascii *mp_card2 = table_card_ascii(mp->cards[1]);
-    tui_centered_ascii(ui, (ui->w / 2) - 3, ui->h / 2 + ui->h / 4, mp_card1);
-    tui_centered_ascii(ui, (ui->w / 2) + 3, ui->h / 2 + ui->h / 4, mp_card2);
-    tui_ascii_free(mp_card1);
-    tui_ascii_free(mp_card2);
-  }
-  tui_ascii_free(mp_cards);
-
-  // Show dealer/sb/bb chip
-  struct tui_ascii *role_chip = (struct tui_ascii *)malloc(sizeof(struct tui_ascii));
-  role_chip->w = ascii_chip.w;
-  role_chip->h = ascii_chip.h;
-  role_chip->buff = (char **)malloc(sizeof(char *) * role_chip->h);
-  for (uint16_t i = 0; i < role_chip->h; i++) {
-    size_t len = strlen(ascii_chip.buff[i]) + 1;
-    role_chip->buff[i] = (char *)malloc(len);
-    memcpy(role_chip->buff[i], ascii_chip.buff[i], len);
-  }
-
-  uint16_t chip_x = tui_gx(ui, 3);
-  uint16_t chip_y = tui_gy(ui, 6);
+  tui_centered_ascii(ui, mp_x, mp_y, mp_cards);
+  tui_centered_text(ui, mp_x, mp_y, mp->name);
+  char role[16] = "";
   switch (mp->role) {
   case PLAYER_BIG_BLIND:
-    role_chip->buff[1][4] = 'B';
-    tui_centered_ascii(ui, chip_x, chip_y, role_chip);
+    strcat(role, "Big Blind");
     break;
   case PLAYER_SMALL_BLIND:
-    role_chip->buff[1][4] = 'S';
-    tui_centered_ascii(ui, chip_x, chip_y, role_chip);
+    strcat(role, "Small Blind");
     break;
   case PLAYER_DEALER:
-    role_chip->buff[1][4] = 'D';
-    tui_centered_ascii(ui, chip_x, chip_y, role_chip);
+    strcat(role, "Dealer");
     break;
   default:
     break;
   }
-  tui_ascii_free(role_chip);
+  tui_centered_text(ui, mp_x, mp_y + 3, role);
+
+  if (mp->cards[0] != NULL && mp->cards[1] != NULL) {
+    struct tui_ascii *mp_card1 = table_card_ascii(mp->cards[0]);
+    struct tui_ascii *mp_card2 = table_card_ascii(mp->cards[1]);
+    tui_centered_ascii(ui, mp_x - 3, mp_y, mp_card1);
+    tui_centered_ascii(ui, mp_x + 3, mp_y, mp_card2);
+    tui_ascii_free(mp_card1);
+    tui_ascii_free(mp_card2);
+  }
+  tui_ascii_free(mp_cards);
 
   // Show current poker state
   tui_centered_text(ui, ui->w / 2, 8 / 9 * ui->h, (char *)poker_states[game->state]);
@@ -219,6 +208,21 @@ void poker_display(struct tui_ui *ui, struct poker_game *game) {
   for (int i = 0; i < n; i++) {
     tui_centered_ascii(ui, start_x + box_w / 2 + i * spacing, player_base_y, player_box);
     tui_centered_text(ui, start_x + box_w / 2 + i * spacing, player_base_y - 3, game->players[i + 1]->name);
+    char role[16] = "";
+    switch (game->players[i + 1]->role) {
+    case PLAYER_BIG_BLIND:
+      strcat(role, "Big Blind");
+      break;
+    case PLAYER_SMALL_BLIND:
+      strcat(role, "Small Blind");
+      break;
+    case PLAYER_DEALER:
+      strcat(role, "Dealer");
+      break;
+    default:
+      break;
+    }
+    tui_centered_text(ui, start_x + box_w / 2 + i * spacing, player_base_y + 3, role);
 
     if (game->players[i + 1]->cards[0] != NULL && game->players[i + 1]->cards[1] != NULL) {
       struct tui_ascii *card1 = NULL;
@@ -299,6 +303,45 @@ void poker_player_do_action(struct poker_game *game, size_t player_id, enum poke
   }
 }
 
+// Returns true if player performed an action
+bool poker_handle_player_input(struct poker_game *game, size_t player_id) {
+  struct poker_player *player = game->players[player_id];
+  enum poker_player_action action = PLAYER_ACTION_NONE;
+
+  switch (last_key) {
+  case 'f':
+  case 'F':
+    action = PLAYER_ACTION_FOLD;
+    break;
+  case 'c':
+  case 'C':
+    action = PLAYER_ACTION_CHECK_CALL;
+    break;
+  case 'b':
+  case 'B':
+    action = PLAYER_ACTION_BET;
+    break;
+  case 'r':
+  case 'R':
+    action = PLAYER_ACTION_RAISE;
+    break;
+  case 'a':
+  case 'A':
+    action = PLAYER_ACTION_ALL_IN;
+    break;
+  default:
+    return false;
+  }
+
+  // Check the action is actually available to the player
+  if (!(player->possible_actions & action))
+    return false;
+
+  poker_player_do_action(game, player_id, action);
+  last_key = -1; // consume the key
+  return true;
+}
+
 bool poker_play(struct tui_ui *ui, struct poker_game *game) {
   (void)ui;
   size_t sb = (game->dealer + 1) % game->n_players;
@@ -350,6 +393,8 @@ bool poker_play(struct tui_ui *ui, struct poker_game *game) {
   case POKER_PREFLOP:
     // TODO: For now, just check main player - always idx 0
     poker_check_player_possible_actions(game, 0);
+    if (!poker_handle_player_input(game, 0))
+      return true; // wait for input
     game->next_state = POKER_FLOP;
     break;
 
@@ -362,6 +407,8 @@ bool poker_play(struct tui_ui *ui, struct poker_game *game) {
 
     // TODO: For now, just check main player - always idx 0
     poker_check_player_possible_actions(game, 0);
+    if (!poker_handle_player_input(game, 0))
+      return true; // wait for input
 
     game->next_state = POKER_TURN;
     break;
@@ -373,6 +420,8 @@ bool poker_play(struct tui_ui *ui, struct poker_game *game) {
 
     // TODO: For now, just check main player - always idx 0
     poker_check_player_possible_actions(game, 0);
+    if (!poker_handle_player_input(game, 0))
+      return true; // wait for input
 
     game->next_state = POKER_RIVER;
     break;
@@ -384,6 +433,8 @@ bool poker_play(struct tui_ui *ui, struct poker_game *game) {
 
     // TODO: For now, just check main player - always idx 0
     poker_check_player_possible_actions(game, 0);
+    if (!poker_handle_player_input(game, 0))
+      return true; // wait for input
 
     game->next_state = POKER_SHOW_CARDS;
     break;
