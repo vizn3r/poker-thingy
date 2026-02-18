@@ -448,3 +448,135 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
   Right alloca redzone:    cb
 ==5560==ABORTING
 ./test.sh: line 5: ./build/game: No such file or directory
+=================================================================
+==46789==ERROR: AddressSanitizer: global-buffer-overflow on address 0x557e7c168478 at pc 0x557e7c15ed1a bp 0x7fffdcf62670 sp 0x7fffdcf62660
+READ of size 8 at 0x557e7c168478 thread T0
+    #0 0x557e7c15ed19 in poker_display /home/vizn3r/dev/poker/src/poker.c:171
+    #1 0x557e7c15d6a9 in main /home/vizn3r/dev/poker/main.c:89
+    #2 0x7f9376436634  (/usr/lib/libc.so.6+0x27634) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #3 0x7f93764366e8 in __libc_start_main (/usr/lib/libc.so.6+0x276e8) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #4 0x557e7c15d8b4 in _start (/home/vizn3r/dev/poker/build/game+0x48b4) (BuildId: 669c244631d8e22494db48f18dfb49d9320fb2ca)
+
+0x557e7c168478 is located 8 bytes before global variable 'poker_states' defined in '/home/vizn3r/dev/poker/src/poker.c:18:13' (0x557e7c168480) of size 72
+0x557e7c168478 is located 48 bytes after global variable 'poker_actions' defined in '/home/vizn3r/dev/poker/src/poker.c:30:13' (0x557e7c168420) of size 40
+SUMMARY: AddressSanitizer: global-buffer-overflow /home/vizn3r/dev/poker/src/poker.c:171 in poker_display
+Shadow bytes around the buggy address:
+  0x557e7c168180: 00 00 00 00 00 00 00 00 00 00 00 00 f9 f9 f9 f9
+  0x557e7c168200: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
+  0x557e7c168280: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
+  0x557e7c168300: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
+  0x557e7c168380: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
+=>0x557e7c168400: f9 f9 f9 f9 00 00 00 00 00 f9 f9 f9 f9 f9 f9[f9]
+  0x557e7c168480: 00 00 00 00 00 00 00 00 00 f9 f9 f9 f9 f9 f9 f9
+  0x557e7c168500: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x557e7c168580: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
+  0x557e7c168600: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
+  0x557e7c168680: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==46789==ABORTING
+=================================================================
+==47009==ERROR: AddressSanitizer: global-buffer-overflow on address 0x56350c060478 at pc 0x56350c056d1a bp 0x7ffdb8a3c9f0 sp 0x7ffdb8a3c9e0
+READ of size 8 at 0x56350c060478 thread T0
+    #0 0x56350c056d19 in poker_display /home/vizn3r/dev/poker/src/poker.c:171
+    #1 0x56350c0556a9 in main /home/vizn3r/dev/poker/main.c:89
+    #2 0x7f3720236634  (/usr/lib/libc.so.6+0x27634) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #3 0x7f37202366e8 in __libc_start_main (/usr/lib/libc.so.6+0x276e8) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #4 0x56350c0558b4 in _start (/home/vizn3r/dev/poker/build/game+0x48b4) (BuildId: 746afc609233b9501d25640edffe50cce0ed7394)
+
+0x56350c060478 is located 8 bytes before global variable 'poker_states' defined in '/home/vizn3r/dev/poker/src/poker.c:18:13' (0x56350c060480) of size 72
+0x56350c060478 is located 48 bytes after global variable 'poker_actions' defined in '/home/vizn3r/dev/poker/src/poker.c:30:13' (0x56350c060420) of size 40
+SUMMARY: AddressSanitizer: global-buffer-overflow /home/vizn3r/dev/poker/src/poker.c:171 in poker_display
+Shadow bytes around the buggy address:
+  0x56350c060180: 00 00 00 00 00 00 00 00 00 00 00 00 f9 f9 f9 f9
+  0x56350c060200: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
+  0x56350c060280: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
+  0x56350c060300: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
+  0x56350c060380: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
+=>0x56350c060400: f9 f9 f9 f9 00 00 00 00 00 f9 f9 f9 f9 f9 f9[f9]
+  0x56350c060480: 00 00 00 00 00 00 00 00 00 f9 f9 f9 f9 f9 f9 f9
+  0x56350c060500: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x56350c060580: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
+  0x56350c060600: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
+  0x56350c060680: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==47009==ABORTING
+=================================================================
+==47306==ERROR: AddressSanitizer: global-buffer-overflow on address 0x556cbf2e1478 at pc 0x556cbf2d7d0a bp 0x7ffcc94111c0 sp 0x7ffcc94111b0
+READ of size 8 at 0x556cbf2e1478 thread T0
+    #0 0x556cbf2d7d09 in poker_display /home/vizn3r/dev/poker/src/poker.c:171
+    #1 0x556cbf2d66a9 in main /home/vizn3r/dev/poker/main.c:89
+    #2 0x7fc609436634  (/usr/lib/libc.so.6+0x27634) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #3 0x7fc6094366e8 in __libc_start_main (/usr/lib/libc.so.6+0x276e8) (BuildId: 5e2075850f8de86da4eead11213c59d926ca3796)
+    #4 0x556cbf2d68b4 in _start (/home/vizn3r/dev/poker/build/game+0x48b4) (BuildId: 4593d52c237055c6ed352aa99abbe7f811109f74)
+
+0x556cbf2e1478 is located 8 bytes before global variable 'poker_states' defined in '/home/vizn3r/dev/poker/src/poker.c:18:13' (0x556cbf2e1480) of size 72
+0x556cbf2e1478 is located 48 bytes after global variable 'poker_actions' defined in '/home/vizn3r/dev/poker/src/poker.c:30:13' (0x556cbf2e1420) of size 40
+SUMMARY: AddressSanitizer: global-buffer-overflow /home/vizn3r/dev/poker/src/poker.c:171 in poker_display
+Shadow bytes around the buggy address:
+  0x556cbf2e1180: 00 00 00 00 00 00 00 00 00 00 00 00 f9 f9 f9 f9
+  0x556cbf2e1200: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
+  0x556cbf2e1280: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
+  0x556cbf2e1300: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
+  0x556cbf2e1380: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
+=>0x556cbf2e1400: f9 f9 f9 f9 00 00 00 00 00 f9 f9 f9 f9 f9 f9[f9]
+  0x556cbf2e1480: 00 00 00 00 00 00 00 00 00 f9 f9 f9 f9 f9 f9 f9
+  0x556cbf2e1500: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x556cbf2e1580: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
+  0x556cbf2e1600: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
+  0x556cbf2e1680: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==47306==ABORTING
