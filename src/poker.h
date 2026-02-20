@@ -26,14 +26,15 @@ enum poker_player_action {
 struct poker_player {
   struct table_card *cards[2];
   char *name;
-  uint64_t money;
+  int64_t money;
   uint64_t bet;
   bool folded;
   bool all_in;
   bool show_cards;
   enum poker_player_role role;
   enum poker_player_action action;
-  enum poker_player_action possible_actions;
+  uint32_t possible_actions;
+  uint8_t hand_rank;
 };
 
 enum poker_game_state {
@@ -67,6 +68,7 @@ struct poker_game {
 
   // Players
   uint16_t dealer; // First player to get cards
+  uint16_t winner;
   struct poker_player **players;
   size_t n_players;
   uint16_t last_aggressor; // Last player to bet/raise

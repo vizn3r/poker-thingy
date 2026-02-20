@@ -85,8 +85,8 @@ int main(void) {
           continue;
         }
       }
-      poker_play(ui, poker_game); // Handles input the first time
-      poker_play(ui, poker_game); // Handles state the second time
+
+      poker_play(ui, poker_game);
       poker_display(ui, poker_game);
     }
 

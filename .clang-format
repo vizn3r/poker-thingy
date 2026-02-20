@@ -1,10 +1,11 @@
 ---
-BasedOnStyle: LLVM
 IndentWidth: 2
 ColumnLimit: 0
-AllowShortBlocksOnASingleLine: Never
+AllowShortBlocksOnASingleLine: Always
 BinPackArguments: false
 BinPackParameters: false
 AlignAfterOpenBracket: AlwaysBreak
 AllowAllArgumentsOnNextLine: true
 AllowAllParametersOfDeclarationOnNextLine: true
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: Always
