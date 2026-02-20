@@ -247,7 +247,7 @@ void poker_check_player_possible_actions(struct poker_game *game, size_t player_
 
   // Check if player is folded
   if (player->folded) {
-    player->possible_actions = 0;
+    player->possible_actions = PLAYER_ACTION_NONE;
     return;
   }
 
@@ -342,6 +342,10 @@ bool poker_handle_player_input(struct poker_game *game, size_t player_id) {
     player->action = PLAYER_ACTION_ALL_IN;
     break;
   default:
+    if (player->possible_actions == PLAYER_ACTION_NONE) {
+      input_consume();
+      return true;
+    }
     return false;
   }
 
@@ -476,6 +480,9 @@ void poker_play(struct tui_ui *ui, struct poker_game *game) {
     for (uint16_t i = 0; i < game->n_players; i++) {
       game->players[i]->cards[0] = NULL;
       game->players[i]->cards[1] = NULL;
+      game->players[i]->folded = false;
+      game->players[i]->all_in = false;
+      game->players[i]->show_cards = false;
     }
 
     for (size_t i = 0; i < game->n_cards; i++) {
