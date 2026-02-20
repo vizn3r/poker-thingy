@@ -85,7 +85,6 @@ int main(void) {
           continue;
         }
       }
-
       poker_play(ui, poker_game);
       poker_display(ui, poker_game);
     }

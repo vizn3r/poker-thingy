@@ -469,6 +469,7 @@ bool poker_handle_player_input(struct poker_game *game, size_t player_id) {
   struct poker_player *player = game->players[player_id];
 
   if (game->state < POKER_PREFLOP && input_get_key() != -1) {
+    input_consume();
     player->possible_actions = PLAYER_ACTION_NONE;
     return true;
   }
@@ -524,13 +525,14 @@ bool poker_handle_player_input(struct poker_game *game, size_t player_id) {
   return poker_player_do_action(game, player_id);
 }
 
+bool next = false;
 void poker_play(struct tui_ui *ui, struct poker_game *game) {
-  bool next = false;
   (void)ui;
   size_t sb = (game->dealer + 1) % game->n_players;
   size_t bb = (game->dealer + 2) % game->n_players;
 
   // The poker state machine
+top:
   switch (game->state) {
 
   // Players are dealt
@@ -553,6 +555,7 @@ void poker_play(struct tui_ui *ui, struct poker_game *game) {
       game->players[bb]->role = PLAYER_BIG_BLIND;
 
       game->last_aggressor = bb; // BB is by default the first last aggressor
+      return;
     }
 
     for (size_t i = 0; i < game->n_players; i++) {
@@ -561,8 +564,10 @@ void poker_play(struct tui_ui *ui, struct poker_game *game) {
     }
     next = poker_handle_player_input(game, 0);
 
-    if (next)
+    if (next) {
       game->state = POKER_SMALL_BLIND;
+      goto top;
+    }
 
     break;
 
@@ -573,6 +578,7 @@ void poker_play(struct tui_ui *ui, struct poker_game *game) {
       game->players[sb]->money -= game->small_blind;
       game->players[sb]->bet = game->small_blind;
       game->current_bet = game->small_blind;
+      return;
     }
 
     for (size_t i = 0; i < game->n_players; i++) {
@@ -581,8 +587,10 @@ void poker_play(struct tui_ui *ui, struct poker_game *game) {
     }
     next = poker_handle_player_input(game, 0);
 
-    if (next)
+    if (next) {
       game->state = POKER_BIG_BLIND;
+      goto top;
+    }
     break;
 
   // Big blind player pays
@@ -592,6 +600,7 @@ void poker_play(struct tui_ui *ui, struct poker_game *game) {
       game->players[bb]->money -= game->big_blind;
       game->players[bb]->bet = game->big_blind;
       game->current_bet = game->big_blind;
+      return;
     }
 
     for (size_t i = 0; i < game->n_players; i++) {
@@ -600,8 +609,10 @@ void poker_play(struct tui_ui *ui, struct poker_game *game) {
     }
     next = poker_handle_player_input(game, 0);
 
-    if (next)
+    if (next) {
       game->state = POKER_PREFLOP;
+      goto top;
+    }
     break;
 
   // Players call/check/fold/raise
@@ -613,6 +624,7 @@ void poker_play(struct tui_ui *ui, struct poker_game *game) {
         game->players[i]->action = PLAYER_ACTION_CHECK_CALL;
         poker_player_do_action(game, i);
       }
+      return;
     }
 
     for (size_t i = 0; i < game->n_players; i++) {
@@ -621,8 +633,10 @@ void poker_play(struct tui_ui *ui, struct poker_game *game) {
     }
     next = poker_handle_player_input(game, 0);
 
-    if (next)
+    if (next) {
       game->state = POKER_FLOP;
+      goto top;
+    }
     break;
 
   // First 3 cards are dealt on the board, players check/fold/raise/call
@@ -638,6 +652,7 @@ void poker_play(struct tui_ui *ui, struct poker_game *game) {
         game->players[i]->action = PLAYER_ACTION_CHECK_CALL;
         poker_player_do_action(game, i);
       }
+      return;
     }
 
     for (size_t i = 0; i < game->n_players; i++) {
@@ -646,8 +661,10 @@ void poker_play(struct tui_ui *ui, struct poker_game *game) {
     }
     next = poker_handle_player_input(game, 0);
 
-    if (next)
+    if (next) {
       game->state = POKER_TURN;
+      goto top;
+    }
     break;
 
   // 4th card is dealt on the board, players check/fold/raise/call
@@ -663,6 +680,7 @@ void poker_play(struct tui_ui *ui, struct poker_game *game) {
         game->players[i]->action = PLAYER_ACTION_CHECK_CALL;
         poker_player_do_action(game, i);
       }
+      return;
     }
 
     for (size_t i = 0; i < game->n_players; i++) {
@@ -671,8 +689,10 @@ void poker_play(struct tui_ui *ui, struct poker_game *game) {
     }
     next = poker_handle_player_input(game, 0);
 
-    if (next)
+    if (next) {
       game->state = POKER_RIVER;
+      goto top;
+    }
     break;
 
   // 5th card is dealt on the board, players check/fold/raise/call
@@ -688,6 +708,7 @@ void poker_play(struct tui_ui *ui, struct poker_game *game) {
         game->players[i]->action = PLAYER_ACTION_CHECK_CALL;
         poker_player_do_action(game, i);
       }
+      return;
     }
 
     for (size_t i = 0; i < game->n_players; i++) {
@@ -697,8 +718,10 @@ void poker_play(struct tui_ui *ui, struct poker_game *game) {
     poker_check_player_possible_actions(game, 0);
     next = poker_handle_player_input(game, 0);
 
-    if (next)
+    if (next) {
       game->state = POKER_SHOW_CARDS;
+      goto top;
+    }
     break;
 
   // Evaulation of the board, players get payed out
@@ -726,13 +749,16 @@ void poker_play(struct tui_ui *ui, struct poker_game *game) {
 
       game->players[game->winner]->money += game->pot;
       game->pot = 0;
+      return;
     }
 
     poker_check_player_possible_actions(game, 0);
     next = poker_handle_player_input(game, 0);
 
-    if (next)
+    if (next) {
       game->state = POKER_ROUND_END;
+      goto top;
+    }
     break;
 
   // End of the round, reset deck, dealer, and players
@@ -761,6 +787,7 @@ void poker_play(struct tui_ui *ui, struct poker_game *game) {
 
       game->n_cards = 0;
       game->winner = 0;
+      return;
     }
 
     next = poker_handle_player_input(game, 0);
@@ -768,6 +795,7 @@ void poker_play(struct tui_ui *ui, struct poker_game *game) {
     if (next) {
       game->state = POKER_DEAL;
       game->rounds_played++;
+      goto top;
     }
     break;
   default:
