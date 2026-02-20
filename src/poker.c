@@ -151,7 +151,7 @@ void poker_display(struct tui_ui *ui, struct poker_game *game) {
 
   struct tui_ascii *mp_cards = tui_ascii_custom_box(17, 7, ascii_box_player);
   tui_centered_ascii(ui, mp_x, mp_y, mp_cards);
-  tui_centered_text(ui, mp_x, mp_y, mp->name);
+  tui_centered_text(ui, mp_x, mp_y - 3, mp->name);
   char role[16] = "";
   switch (mp->role) {
   case PLAYER_BIG_BLIND:
@@ -170,9 +170,9 @@ void poker_display(struct tui_ui *ui, struct poker_game *game) {
   char chips[32] = "";
   snprintf(chips, 32, "( $%" PRId64 " )", mp->money);
   tui_centered_text(ui, mp_x, mp_y + 3, chips);
-  if (game->state >= POKER_FLOP)
+  if (game->state >= POKER_DEAL)
     tui_centered_text(ui, mp_x, mp_y - 4, (char *)poker_hands[mp->hand_rank]);
-  if (game->state >= POKER_SHOW_CARDS && game->winner == 0)
+  if (game->state > POKER_SHOW_CARDS && game->winner == 0)
     tui_centered_text(ui, mp_x, mp_y - 5, "Winner!");
 
   if (mp->cards[0] != NULL && mp->cards[1] != NULL) {
@@ -219,7 +219,7 @@ void poker_display(struct tui_ui *ui, struct poker_game *game) {
     tui_centered_text(ui, player_base_x, player_base_y + 3, chips);
     if (game->state >= POKER_SHOW_CARDS)
       tui_centered_text(ui, player_base_x, player_base_y - 4, (char *)poker_hands[game->players[i]->hand_rank]);
-    if (game->state >= POKER_SHOW_CARDS && game->winner == i)
+    if (game->state > POKER_SHOW_CARDS && game->winner == i)
       tui_centered_text(ui, player_base_x, player_base_y - 5, "Winner!");
 
     if (game->players[i]->cards[0] != NULL && game->players[i]->cards[1] != NULL) {
@@ -338,9 +338,44 @@ uint8_t poker_player_eval_hand(struct poker_game *game, size_t player_id) {
 
 void poker_player_draw_resolve(struct poker_game *game, uint16_t *player_ids, size_t n_players) {
   uint16_t winner = player_ids[0];
+
   for (size_t i = 1; i < n_players; i++) {
     struct poker_player *a = game->players[winner];
     struct poker_player *b = game->players[player_ids[i]];
+
+    if (a->hand_rank == 4 || a->hand_rank == 8) {
+      uint16_t all_a = 0, all_b = 0;
+      all_a |= (1 << a->cards[0]->value) | (1 << a->cards[1]->value);
+      all_b |= (1 << b->cards[0]->value) | (1 << b->cards[1]->value);
+      for (size_t j = 0; j < game->n_cards; j++) {
+        all_a |= (1 << game->cards[j]->value);
+        all_b |= (1 << game->cards[j]->value);
+      }
+
+      uint8_t high_a = 0, high_b = 0, consec = 0;
+      for (uint8_t r = 14; r >= 2; r--) {
+        if ((all_a >> r) & 1) consec++;
+        else
+          consec = 0;
+        if (consec >= 5) {
+          high_a = r + 4;
+          break;
+        }
+      }
+      consec = 0;
+      for (uint8_t r = 14; r >= 2; r--) {
+        if ((all_b >> r) & 1) consec++;
+        else
+          consec = 0;
+        if (consec >= 5) {
+          high_b = r + 4;
+          break;
+        }
+      }
+
+      if (high_b > high_a) winner = player_ids[i];
+      if (high_b != high_a) continue;
+    }
 
     uint16_t a_high = a->cards[0]->value > a->cards[1]->value ? a->cards[0]->value : a->cards[1]->value;
     uint16_t b_high = b->cards[0]->value > b->cards[1]->value ? b->cards[0]->value : b->cards[1]->value;
@@ -356,6 +391,7 @@ void poker_player_draw_resolve(struct poker_game *game, uint16_t *player_ids, si
 
     if (b_low > a_low) winner = player_ids[i];
   }
+
   game->winner = winner;
 }
 
@@ -652,24 +688,6 @@ void poker_play(struct tui_ui *ui, struct poker_game *game) {
         game->players[i]->action = PLAYER_ACTION_CHECK_CALL;
         poker_player_do_action(game, i);
       }
-
-      uint16_t winning_players[game->n_players];
-      size_t n_winning_players = 0;
-      for (size_t i = 0; i < game->n_players; i++)
-        if (game->players[i]->hand_rank > game->players[game->winner]->hand_rank)
-          game->winner = i;
-
-      for (size_t i = 0; i < game->n_players; i++) {
-        if (game->players[i]->hand_rank == game->players[game->winner]->hand_rank) {
-          winning_players[n_winning_players] = i;
-          n_winning_players++;
-        }
-      }
-
-      if (n_winning_players > 1)
-        poker_player_draw_resolve(game, winning_players, n_winning_players);
-      else
-        game->winner = winning_players[0];
     }
 
     for (size_t i = 0; i < game->n_players; i++) {
@@ -686,6 +704,25 @@ void poker_play(struct tui_ui *ui, struct poker_game *game) {
   // Evaulation of the board, players get payed out
   case POKER_SHOW_CARDS:
     if (game->pot > 0) {
+      uint16_t winning_players[game->n_players];
+      size_t n_winning_players = 0;
+      for (size_t i = 0; i < game->n_players; i++) {
+        game->players[i]->hand_rank = poker_player_eval_hand(game, i);
+        if (game->players[i]->hand_rank > game->players[game->winner]->hand_rank)
+          game->winner = i;
+      }
+
+      for (size_t i = 0; i < game->n_players; i++) {
+        if (game->players[i]->hand_rank == game->players[game->winner]->hand_rank) {
+          winning_players[n_winning_players] = i;
+          n_winning_players++;
+        }
+      }
+
+      if (n_winning_players > 1)
+        poker_player_draw_resolve(game, winning_players, n_winning_players);
+      else
+        game->winner = winning_players[0];
 
       game->players[game->winner]->money += game->pot;
       game->pot = 0;
