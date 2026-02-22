@@ -122,15 +122,11 @@ void poker_free(struct poker_game *game) {
   for (size_t i = 0; i < game->n_players; i++) {
     free(game->players[i]);
   }
-  free(game->players);
-  for (size_t i = 0; i < game->n_cards; i++) {
-    free(game->cards[i]);
-  }
+  free(game->deck->cards);
   free(game->deck);
+  free(game->players);
   free(game->discard);
-  free(game->main_player);
   free(game->side_pots);
-  free(game->board);
   free(game);
 }
 
@@ -172,7 +168,7 @@ void poker_display(struct tui_ui *ui, struct poker_game *game) {
   tui_centered_text(ui, mp_x, mp_y + 3, chips);
   if (game->state >= POKER_DEAL)
     tui_centered_text(ui, mp_x, mp_y - 4, (char *)poker_hands[mp->hand_rank]);
-  if (game->state > POKER_SHOW_CARDS && game->winner == 0)
+  if (game->state == POKER_SHOW_CARDS && game->winner == 0)
     tui_centered_text(ui, mp_x, mp_y - 5, "Winner!");
 
   if (mp->cards[0] != NULL && mp->cards[1] != NULL) {
@@ -219,7 +215,7 @@ void poker_display(struct tui_ui *ui, struct poker_game *game) {
     tui_centered_text(ui, player_base_x, player_base_y + 3, chips);
     if (game->state >= POKER_SHOW_CARDS)
       tui_centered_text(ui, player_base_x, player_base_y - 4, (char *)poker_hands[game->players[i]->hand_rank]);
-    if (game->state > POKER_SHOW_CARDS && game->winner == i)
+    if (game->state == POKER_SHOW_CARDS && game->winner == i)
       tui_centered_text(ui, player_base_x, player_base_y - 5, "Winner!");
 
     if (game->players[i]->cards[0] != NULL && game->players[i]->cards[1] != NULL) {
@@ -577,7 +573,6 @@ top:
       game->pot += game->small_blind;
       game->players[sb]->money -= game->small_blind;
       game->players[sb]->bet = game->small_blind;
-      game->current_bet = game->small_blind;
       return;
     }
 
@@ -598,8 +593,8 @@ top:
     if (game->pot == game->small_blind) {
       game->pot += game->big_blind;
       game->players[bb]->money -= game->big_blind;
-      game->players[bb]->bet = game->big_blind;
-      game->current_bet = game->big_blind;
+      game->players[bb]->bet = game->pot;
+      game->current_bet = game->pot;
       return;
     }
 
@@ -619,7 +614,7 @@ top:
   case POKER_PREFLOP:
     if (game->pot < game->big_blind) {
       // For now, alll non-main players will call
-      // TODO: make proper ordered player actions
+      // TODO: make properly ordered player actions
       for (size_t i = 1; i < game->n_players; i++) {
         game->players[i]->action = PLAYER_ACTION_CHECK_CALL;
         poker_player_do_action(game, i);

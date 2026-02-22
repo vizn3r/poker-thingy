@@ -53,7 +53,6 @@ enum poker_game_state {
 
 struct poker_game {
   // Game state
-  struct poker_board *board;
   enum poker_game_state state;
   uint32_t rounds_played;
 
